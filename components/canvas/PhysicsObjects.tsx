@@ -110,7 +110,7 @@ export function MouseRepulsor() {
   const { camera }  = useThree()
   const mouse       = useMousePosition()
   const raycaster   = useMemo(() => new THREE.Raycaster(), [])
-  const plane       = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), [])
+  const plane       = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), []) // vertical z=0 plane
   const target      = useMemo(() => new THREE.Vector3(), [])
   const prevTarget  = useMemo(() => new THREE.Vector3(), [])
   const ndc         = useMemo(() => new THREE.Vector2(), [])
@@ -142,7 +142,7 @@ export function MouseRepulsor() {
     // Radius 1.8 — much larger collision footprint
     <RigidBody ref={repulsorRef} type="kinematicPosition" colliders="ball">
       <mesh visible={false}>
-        <sphereGeometry args={[1.8]} />
+        <sphereGeometry args={[2.0]} />
         <meshBasicMaterial />
       </mesh>
     </RigidBody>
