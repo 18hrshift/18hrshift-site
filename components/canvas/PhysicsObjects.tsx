@@ -1,9 +1,12 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useMemo } from 'react'
 import { RigidBody } from '@react-three/rapier'
 import { MeshTransmissionMaterial } from '@react-three/drei'
+import { useFrame, useThree } from '@react-three/fiber'
+import * as THREE from 'three'
 import type { RapierRigidBody } from '@react-three/rapier'
+import { useMousePosition } from '@/hooks/useMousePosition'
 
 type ShapeConfig = {
   pos:    [number, number, number]
@@ -84,5 +87,33 @@ export function PhysicsObjects() {
         <PhysicsShape key={i} {...shape} />
       ))}
     </>
+  )
+}
+
+export function MouseRepulsor() {
+  const repulsorRef = useRef<RapierRigidBody>(null)
+  const { camera } = useThree()
+  const mouse = useMousePosition()
+  const raycaster = useMemo(() => new THREE.Raycaster(), [])
+  const plane     = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), [])
+  const target    = useMemo(() => new THREE.Vector3(), [])
+  const ndc       = useMemo(() => new THREE.Vector2(), [])
+
+  useFrame(() => {
+    ndc.set(mouse.current.x, mouse.current.y)
+    raycaster.setFromCamera(ndc, camera)
+    const hit = raycaster.ray.intersectPlane(plane, target)
+    if (hit && repulsorRef.current) {
+      repulsorRef.current.setNextKinematicTranslation(target)
+    }
+  })
+
+  return (
+    <RigidBody ref={repulsorRef} type="kinematicPosition" colliders="ball">
+      <mesh visible={false}>
+        <sphereGeometry args={[1.0]} />
+        <meshBasicMaterial />
+      </mesh>
+    </RigidBody>
   )
 }

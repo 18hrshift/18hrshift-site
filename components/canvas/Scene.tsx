@@ -6,7 +6,7 @@ import { AdaptiveDpr, Environment, Sparkles, Float } from '@react-three/drei'
 import { Physics, RigidBody, CuboidCollider } from '@react-three/rapier'
 import * as THREE from 'three'
 import { NoiseField } from './NoiseField'
-import { PhysicsObjects } from './PhysicsObjects'
+import { PhysicsObjects, MouseRepulsor } from './PhysicsObjects'
 import { PostFX } from './PostFX'
 
 function ScrollCamera() {
@@ -92,6 +92,7 @@ export function Scene() {
         <Environment preset="city" background={false} />
         <Physics gravity={[0, -5.5, 0]}>
           <PhysicsObjects />
+          <MouseRepulsor />
           {/* Invisible physics floor */}
           <RigidBody type="fixed" position={[0, -2.5, 0]}>
             <CuboidCollider args={[25, 0.1, 25]} />

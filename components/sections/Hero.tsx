@@ -33,6 +33,17 @@ export function Hero() {
       {/* Radial gradient to punch through the canvas at center */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_50%,transparent_30%,#050508_100%)] pointer-events-none" />
 
+      {/* System HUD ticker */}
+      <div className="absolute top-[4.5rem] left-0 right-0 z-20 overflow-hidden border-y border-blue/10 bg-surface/30 backdrop-blur-sm">
+        <div className="hud-ticker flex gap-12 py-1.5 whitespace-nowrap font-mono text-[9px] text-muted tracking-[0.3em]">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <span key={i} className="shrink-0">
+              SYS:ONLINE&nbsp;&nbsp;//&nbsp;&nbsp;LATENCY:2ms&nbsp;&nbsp;//&nbsp;&nbsp;SIGNAL:ACTIVE&nbsp;&nbsp;//&nbsp;&nbsp;OUTPUT:18HRSHIFT&nbsp;&nbsp;//&nbsp;&nbsp;UPTIME:∞&nbsp;&nbsp;//&nbsp;&nbsp;RENDER:REALTIME&nbsp;&nbsp;//&nbsp;&nbsp;FRAME:DELIBERATE&nbsp;&nbsp;//&nbsp;&nbsp;STATUS:██████&nbsp;&nbsp;//&nbsp;&nbsp;
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* Text overlay */}
       <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-6">
         <h1
