@@ -16,18 +16,29 @@ type ShapeConfig = {
   torusR?: number
 }
 
-const SHAPES: ShapeConfig[] = [
-  { type: 'icosahedron', pos: [-3.5,  8.0, -1.5], color: '#00BFFF', size: 0.40 },
-  { type: 'torus',       pos: [ 1.5,  9.5, -0.5], color: '#FF2D78', size: 0.30, torusR: 0.10 },
-  { type: 'octahedron',  pos: [ 3.2,  7.5,  0.5], color: '#00BFFF', size: 0.44 },
-  { type: 'icosahedron', pos: [-0.8, 11.0,  1.0], color: '#FF2D78', size: 0.28 },
-  { type: 'torus',       pos: [ 2.8, 10.5, -2.0], color: '#00BFFF', size: 0.24, torusR: 0.08 },
-  { type: 'octahedron',  pos: [-2.8, 12.0,  0.3], color: '#FF2D78', size: 0.36 },
-  { type: 'icosahedron', pos: [ 0.6,  8.5, -3.0], color: '#00BFFF', size: 0.32 },
-  { type: 'torus',       pos: [-1.8, 13.5,  2.0], color: '#FF2D78', size: 0.22, torusR: 0.08 },
-  { type: 'octahedron',  pos: [ 3.8,  9.0,  1.5], color: '#00BFFF', size: 0.28 },
-  { type: 'icosahedron', pos: [ 0.0, 14.5, -0.5], color: '#FF2D78', size: 0.46 },
-]
+const TYPES = ['icosahedron', 'octahedron', 'torus'] as const
+const COLORS = ['#00BFFF', '#FF2D78'] as const
+
+function rnd(min: number, max: number) { return Math.random() * (max - min) + min }
+
+function generateShapes(): ShapeConfig[] {
+  return Array.from({ length: 12 }, (_, i) => {
+    const type  = TYPES[i % TYPES.length]
+    const color = COLORS[i % 2]
+    const size  = rnd(0.22, 0.50)
+    return {
+      type,
+      color,
+      size,
+      torusR: size * 0.30,
+      pos: [
+        rnd(-5.5, 5.5),           // wide X spread
+        rnd(7.0, 18.0),           // varying drop heights
+        rnd(-3.5, 3.5),           // deep Z spread
+      ] as [number, number, number],
+    }
+  })
+}
 
 function PhysicsShape({ pos, color, size, type, torusR = 0.10 }: ShapeConfig) {
   const rigidRef = useRef<RapierRigidBody>(null)
@@ -81,9 +92,10 @@ function PhysicsShape({ pos, color, size, type, torusR = 0.10 }: ShapeConfig) {
 }
 
 export function PhysicsObjects() {
+  const shapes = useMemo(() => generateShapes(), [])
   return (
     <>
-      {SHAPES.map((shape, i) => (
+      {shapes.map((shape, i) => (
         <PhysicsShape key={i} {...shape} />
       ))}
     </>
@@ -92,26 +104,42 @@ export function PhysicsObjects() {
 
 export function MouseRepulsor() {
   const repulsorRef = useRef<RapierRigidBody>(null)
-  const { camera } = useThree()
-  const mouse = useMousePosition()
-  const raycaster = useMemo(() => new THREE.Raycaster(), [])
-  const plane     = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), [])
-  const target    = useMemo(() => new THREE.Vector3(), [])
-  const ndc       = useMemo(() => new THREE.Vector2(), [])
+  const { camera }  = useThree()
+  const mouse       = useMousePosition()
+  const raycaster   = useMemo(() => new THREE.Raycaster(), [])
+  const plane       = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), [])
+  const target      = useMemo(() => new THREE.Vector3(), [])
+  const prevTarget  = useMemo(() => new THREE.Vector3(), [])
+  const ndc         = useMemo(() => new THREE.Vector2(), [])
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     ndc.set(mouse.current.x, mouse.current.y)
     raycaster.setFromCamera(ndc, camera)
     const hit = raycaster.ray.intersectPlane(plane, target)
-    if (hit && repulsorRef.current) {
-      repulsorRef.current.setNextKinematicTranslation(target)
+    if (!hit || !repulsorRef.current) return
+
+    // Mouse velocity in world space this frame
+    const vel = target.clone().sub(prevTarget).divideScalar(delta)
+    const speed = vel.length()
+
+    repulsorRef.current.setNextKinematicTranslation(target)
+
+    // Blast nearby bodies when mouse moves fast
+    if (speed > 2.5) {
+      repulsorRef.current.setLinvel(
+        { x: vel.x * 0.6, y: vel.y * 0.6, z: vel.z * 0.6 },
+        true,
+      )
     }
+
+    prevTarget.copy(target)
   })
 
   return (
+    // Radius 1.8 — much larger collision footprint
     <RigidBody ref={repulsorRef} type="kinematicPosition" colliders="ball">
       <mesh visible={false}>
-        <sphereGeometry args={[1.0]} />
+        <sphereGeometry args={[1.8]} />
         <meshBasicMaterial />
       </mesh>
     </RigidBody>
