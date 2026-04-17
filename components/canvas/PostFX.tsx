@@ -2,6 +2,7 @@
 
 import {
   EffectComposer,
+  Bloom,
   Noise,
   ChromaticAberration,
   Vignette,
@@ -12,10 +13,16 @@ import * as THREE from 'three'
 export function PostFX() {
   return (
     <EffectComposer>
+      <Bloom
+        intensity={1.4}
+        luminanceThreshold={0.55}
+        luminanceSmoothing={0.025}
+        mipmapBlur
+      />
       <Noise
         premultiply
         blendFunction={BlendFunction.ADD}
-        opacity={0.06}
+        opacity={0.055}
       />
       <ChromaticAberration
         offset={new THREE.Vector2(0.0018, 0.0014)}
@@ -23,8 +30,8 @@ export function PostFX() {
         modulationOffset={0}
       />
       <Vignette
-        offset={0.4}
-        darkness={0.88}
+        offset={0.38}
+        darkness={0.82}
         eskil={false}
       />
     </EffectComposer>

@@ -9,36 +9,37 @@ export function Archive() {
         <div className="h-px flex-1 bg-gradient-to-r from-magenta/40 to-transparent" />
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-surface2">
-        {site.archive.map((item) => (
+      {/* Perspective container for depth animation */}
+      <div className="archive-grid grid grid-cols-2 md:grid-cols-3 gap-px bg-surface2">
+        {site.archive.map((item, idx) => (
           <div
             key={item.id}
-            className="group relative bg-bg p-8 md:p-10 cursor-pointer overflow-hidden transition-colors duration-300 hover:bg-surface"
+            className="archive-tile group relative bg-bg p-8 md:p-10 cursor-pointer overflow-hidden transition-colors duration-300 hover:bg-surface"
+            style={{ '--tile-index': idx } as React.CSSProperties}
           >
-            {/* Hover border glow */}
+            {/* Hover: glowing border */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-              <div className="absolute inset-0 border border-blue/15" />
-              <div className="absolute inset-0 bg-blue/[0.02]" />
+              <div className="absolute inset-0 border border-blue/20" />
+              <div className="absolute inset-0 bg-blue/[0.025]" />
             </div>
 
-            {/* ID + Year */}
-            <div className="font-mono text-[9px] text-muted mb-6 tracking-widest flex justify-between">
+            {/* ID row */}
+            <div className="font-mono text-[9px] text-muted mb-6 tracking-widest flex justify-between items-center">
               <span>{item.id}</span>
-              <span>{item.year}</span>
+              <span className="text-magenta/60">{item.code}</span>
             </div>
 
-            {/* Title */}
+            {/* Label */}
             <div className="font-display font-black text-2xl md:text-3xl text-ink uppercase leading-tight group-hover:text-blue transition-colors duration-300">
               {item.label}
             </div>
 
-            {/* Type */}
+            {/* Year */}
             <div className="font-mono text-[9px] text-muted mt-4 tracking-[0.35em]">
-              {item.type}
+              {item.year}
             </div>
 
-            {/* Hover magenta line */}
+            {/* Magenta bottom slide */}
             <div className="absolute bottom-0 left-0 h-px w-0 group-hover:w-full bg-magenta/60 transition-all duration-500" />
           </div>
         ))}
