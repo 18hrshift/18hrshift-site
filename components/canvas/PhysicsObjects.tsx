@@ -21,20 +21,25 @@ const COLORS = ['#00BFFF', '#FF2D78'] as const
 
 function rnd(min: number, max: number) { return Math.random() * (max - min) + min }
 
+// Triangular distribution — averages two randoms, clusters toward center
+function rndCenter(spread: number) {
+  return (Math.random() + Math.random() - 1) * spread
+}
+
 function generateShapes(): ShapeConfig[] {
   return Array.from({ length: 12 }, (_, i) => {
     const type  = TYPES[i % TYPES.length]
     const color = COLORS[i % 2]
-    const size  = rnd(0.22, 0.50)
+    const size  = rnd(0.26, 0.52)
     return {
       type,
       color,
       size,
       torusR: size * 0.30,
       pos: [
-        rnd(-5.5, 5.5),           // wide X spread
-        rnd(7.0, 18.0),           // varying drop heights
-        rnd(-3.5, 3.5),           // deep Z spread
+        rndCenter(3.2),          // center-biased X, rare edge objects
+        rnd(7.0, 16.0),          // varying drop heights
+        rndCenter(1.8),          // shallow Z — keep objects in the lit zone
       ] as [number, number, number],
     }
   })
