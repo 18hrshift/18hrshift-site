@@ -71,7 +71,7 @@ export function Scene() {
         toneMappingExposure: 0.85,
       }}
       dpr={[1, 1.5]}
-      style={{ background: '#050508', width: '100%', height: '100%' }}
+      style={{ position: 'absolute', inset: 0, background: '#050508' }}
     >
       <AdaptiveDpr pixelated />
       <ScrollCamera />
