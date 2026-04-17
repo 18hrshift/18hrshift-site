@@ -165,3 +165,9 @@ body {
 .hud-ticker {
   animation: ticker-scroll 28s linear infinite;
 }
+
+/* ── Blink (CORE cursor) ───────────────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
