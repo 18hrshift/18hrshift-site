@@ -26,7 +26,7 @@ export function Hero() {
       className="relative h-screen w-full overflow-hidden"
     >
       {/* 3D canvas fills the section */}
-      <div className="absolute inset-0 scanlines">
+      <div className="absolute inset-0 scanlines" style={{ height: '100%' }}>
         <Scene />
       </div>
 
