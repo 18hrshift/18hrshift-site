@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Barlow_Condensed, Barlow, JetBrains_Mono } from 'next/font/google'
 import { LenisProvider } from '@/components/providers/LenisProvider'
 import { AnimationProvider } from '@/components/providers/AnimationProvider'
+import { Cursor } from '@/components/ui/Cursor'
 import './globals.css'
 import { site } from '@/config/site'
 
@@ -46,6 +47,7 @@ export default function RootLayout({
       className={`${barlowCondensed.variable} ${barlow.variable} ${jetbrainsMono.variable}`}
     >
       <body>
+        <Cursor />
         <LenisProvider>
           <AnimationProvider>{children}</AnimationProvider>
         </LenisProvider>

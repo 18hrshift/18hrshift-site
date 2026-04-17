@@ -34,6 +34,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  cursor: none !important;  /* Custom cursor takes over */
 }
 
 html {
@@ -62,6 +63,34 @@ body {
 ::-webkit-scrollbar-thumb  { background: var(--clr-muted); }
 ::-webkit-scrollbar-thumb:hover { background: var(--clr-blue); }
 
+/* ── Custom Cursor ─────────────────────────────────────── */
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  background: var(--clr-blue);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  will-change: transform;
+}
+
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid rgba(0, 191, 255, 0.55);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  will-change: transform;
+}
+
 /* ── Scanline overlay ──────────────────────────────────── */
 .scanlines {
   position: relative;
@@ -84,10 +113,39 @@ body {
 /* ── Glow utilities ────────────────────────────────────── */
 .glow-blue         { box-shadow: 0 0 20px rgba(0, 191, 255, 0.15); }
 .glow-magenta      { box-shadow: 0 0 20px rgba(255, 45, 120, 0.2); }
-.text-glow-blue    { text-shadow: 0 0 30px rgba(0, 191, 255, 0.4); }
-.text-glow-magenta { text-shadow: 0 0 30px rgba(255, 45, 120, 0.4); }
+.text-glow-blue    { text-shadow: 0 0 40px rgba(0, 191, 255, 0.45); }
+.text-glow-magenta { text-shadow: 0 0 40px rgba(255, 45, 120, 0.45); }
 
-/* ── Scroll reveal ─────────────────────────────────────── */
+/* ── CSS Scroll-Driven Animations (archive tiles) ──────── */
+@supports (animation-timeline: view()) {
+  @keyframes tile-rise {
+    from {
+      opacity: 0;
+      transform: translateY(52px) scale(0.93);
+      filter: blur(3px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0px);
+    }
+  }
+
+  .archive-tile {
+    animation: tile-rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 50%;
+  }
+
+  /* Stagger via delay on nth-child */
+  .archive-tile:nth-child(2) { animation-delay: calc(var(--tile-index) * 40ms); }
+  .archive-tile:nth-child(3) { animation-delay: calc(var(--tile-index) * 40ms); }
+  .archive-tile:nth-child(4) { animation-delay: calc(var(--tile-index) * 40ms); }
+  .archive-tile:nth-child(5) { animation-delay: calc(var(--tile-index) * 40ms); }
+  .archive-tile:nth-child(6) { animation-delay: calc(var(--tile-index) * 40ms); }
+}
+
+/* ── Scroll reveal (Endpoint) ──────────────────────────── */
 [data-reveal] {
   opacity: 0;
   transform: translateY(24px);

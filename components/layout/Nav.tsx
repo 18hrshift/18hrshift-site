@@ -1,11 +1,27 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useMagnetic } from '@/hooks/useMagnetic'
 import { site } from '@/config/site'
+
+function MagneticLink({ href, label }: { href: string; label: string }) {
+  const ref = useMagnetic<HTMLAnchorElement>(0.32)
+  return (
+    <Link
+      ref={ref}
+      href={href}
+      className="font-mono text-[10px] text-muted hover:text-blue transition-colors tracking-[0.35em] inline-block"
+      data-magnetic
+    >
+      {label}
+    </Link>
+  )
+}
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false)
+  const monogramRef = useMagnetic<HTMLAnchorElement>(0.45)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -22,8 +38,10 @@ export function Nav() {
       }`}
     >
       <Link
+        ref={monogramRef}
         href="#hero"
-        className="font-mono text-blue text-sm tracking-[0.25em] hover:text-glow-blue transition-all"
+        className="font-mono text-blue text-sm tracking-[0.25em] text-glow-blue inline-block"
+        data-magnetic
       >
         {site.monogram}
       </Link>
@@ -31,12 +49,7 @@ export function Nav() {
       <ul className="flex gap-8">
         {site.nav.map((item) => (
           <li key={item.href}>
-            <Link
-              href={item.href}
-              className="font-mono text-[10px] text-muted hover:text-blue transition-colors tracking-[0.35em]"
-            >
-              {item.label}
-            </Link>
+            <MagneticLink href={item.href} label={item.label} />
           </li>
         ))}
       </ul>
