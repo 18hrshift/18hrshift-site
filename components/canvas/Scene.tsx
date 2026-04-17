@@ -93,9 +93,13 @@ export function Scene() {
         <Physics gravity={[0, -5.5, 0]}>
           <PhysicsObjects />
           <MouseRepulsor />
-          {/* Invisible physics floor */}
-          <RigidBody type="fixed" position={[0, -2.5, 0]}>
-            <CuboidCollider args={[25, 0.1, 25]} />
+          {/* Floor + 4 invisible walls to keep objects in scene */}
+          <RigidBody type="fixed">
+            <CuboidCollider args={[25, 0.1, 25]} position={[0, -2.5, 0]} />
+            <CuboidCollider args={[0.3, 20, 8]}  position={[-7, 4, 0]} />
+            <CuboidCollider args={[0.3, 20, 8]}  position={[ 7, 4, 0]} />
+            <CuboidCollider args={[8, 20, 0.3]}  position={[0, 4, -5]} />
+            <CuboidCollider args={[8, 20, 0.3]}  position={[0, 4,  4]} />
           </RigidBody>
         </Physics>
       </Suspense>

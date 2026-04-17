@@ -1,12 +1,25 @@
 'use client'
 
-import { useRef, useMemo } from 'react'
+import { useRef, useMemo, useEffect } from 'react'
 import { RigidBody } from '@react-three/rapier'
 import { MeshTransmissionMaterial } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import type { RapierRigidBody } from '@react-three/rapier'
 import { useMousePosition } from '@/hooks/useMousePosition'
+
+const STORAGE_KEY = '18hs-physics-v1'
+
+function loadPositions(): ([number, number, number])[] | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return null
+    const data = JSON.parse(raw) as { x: number; y: number; z: number }[]
+    if (!Array.isArray(data) || data.length < 3) return null
+    // Clamp Y so objects don't restore underground
+    return data.map(p => [p.x, Math.max(p.y, -1.5), p.z])
+  } catch { return null }
+}
 
 type ShapeConfig = {
   pos:    [number, number, number]
@@ -26,36 +39,42 @@ function rndCenter(spread: number) {
   return (Math.random() + Math.random() - 1) * spread
 }
 
-function generateShapes(): ShapeConfig[] {
+function generateShapes(saved: ([number, number, number])[] | null): ShapeConfig[] {
   return Array.from({ length: 12 }, (_, i) => {
     const type  = TYPES[i % TYPES.length]
     const color = COLORS[i % 2]
     const size  = rnd(0.26, 0.52)
-    return {
-      type,
-      color,
-      size,
-      torusR: size * 0.30,
-      pos: [
-        rndCenter(3.2),          // center-biased X, rare edge objects
-        rnd(7.0, 16.0),          // varying drop heights
-        rndCenter(1.8),          // shallow Z — keep objects in the lit zone
-      ] as [number, number, number],
-    }
+    const pos: [number, number, number] = saved?.[i] ?? [
+      rndCenter(3.2),
+      rnd(7.0, 16.0),
+      rndCenter(1.8),
+    ]
+    return { type, color, size, torusR: size * 0.30, pos }
   })
 }
 
-function PhysicsShape({ pos, color, size, type, torusR = 0.10 }: ShapeConfig) {
+function PhysicsShape({
+  pos, color, size, type, torusR = 0.10,
+  onBodyReady,
+}: ShapeConfig & { onBodyReady: (ref: RapierRigidBody) => void }) {
   const rigidRef = useRef<RapierRigidBody>(null)
 
+  useEffect(() => {
+    if (rigidRef.current) onBodyReady(rigidRef.current)
+  }, [onBodyReady])
+
   const handleClick = () => {
-    if (!rigidRef.current) return
-    rigidRef.current.applyImpulse(
-      { x: (Math.random() - 0.5) * 12, y: 18, z: (Math.random() - 0.5) * 12 },
+    const b = rigidRef.current
+    if (!b) return
+    // Pop in a random direction with strong upward bias
+    const angle = Math.random() * Math.PI * 2
+    const lateral = 14 + Math.random() * 8
+    b.applyImpulse(
+      { x: Math.cos(angle) * lateral, y: 22 + Math.random() * 10, z: Math.sin(angle) * lateral },
       true,
     )
-    rigidRef.current.applyTorqueImpulse(
-      { x: (Math.random() - 0.5) * 8, y: (Math.random() - 0.5) * 8, z: (Math.random() - 0.5) * 8 },
+    b.applyTorqueImpulse(
+      { x: (Math.random() - 0.5) * 14, y: (Math.random() - 0.5) * 14, z: (Math.random() - 0.5) * 14 },
       true,
     )
   }
@@ -65,10 +84,10 @@ function PhysicsShape({ pos, color, size, type, torusR = 0.10 }: ShapeConfig) {
       ref={rigidRef}
       position={pos}
       colliders="hull"
-      restitution={0.55}
-      friction={0.4}
-      linearDamping={0.25}
-      angularDamping={0.3}
+      restitution={0.65}
+      friction={0.3}
+      linearDamping={0.2}
+      angularDamping={0.25}
     >
       <mesh onClick={handleClick} castShadow>
         {type === 'icosahedron' && <icosahedronGeometry args={[size, 0]} />}
@@ -97,11 +116,32 @@ function PhysicsShape({ pos, color, size, type, torusR = 0.10 }: ShapeConfig) {
 }
 
 export function PhysicsObjects() {
-  const shapes = useMemo(() => generateShapes(), [])
+  const saved  = useMemo(() => loadPositions(), [])
+  const shapes = useMemo(() => generateShapes(saved), [saved])
+  const bodies = useRef<RapierRigidBody[]>([])
+
+  // Save positions to localStorage every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const positions = bodies.current.map(b => {
+        const t = b.translation()
+        return { x: t.x, y: t.y, z: t.z }
+      })
+      if (positions.length) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(positions))
+      }
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <>
       {shapes.map((shape, i) => (
-        <PhysicsShape key={i} {...shape} />
+        <PhysicsShape
+          key={i}
+          {...shape}
+          onBodyReady={(ref) => { bodies.current[i] = ref }}
+        />
       ))}
     </>
   )
