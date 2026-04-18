@@ -3,7 +3,7 @@ export const site = {
   monogram: '18',
   tagline: 'OUTPUT IS THE ONLY METRIC.',
   description: '18HRSHIFT — digital native production.',
-  url: 'https://18hrshift.vercel.app',
+  url: 'https://18hrshift.com',
 
   nav: [
     { label: 'SIGNAL',   href: '#signal' },
