@@ -7,6 +7,7 @@ export const site = {
 
   nav: [
     { label: 'SIGNAL',   href: '#signal' },
+    { label: 'WOW_',     href: '#wow' },
     { label: 'ARCHIVE',  href: '#archive' },
     { label: 'ENDPOINT', href: '#endpoint' },
   ],
