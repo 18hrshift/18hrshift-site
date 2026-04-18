@@ -70,15 +70,20 @@ function buildAudio(): AudioRig {
 export function Frequency() {
   const sectionRef = useRef<HTMLElement>(null)
   const canvasRef  = useRef<HTMLCanvasElement>(null)
-  const [active, setActive]       = useState(false)
-  const [freqHz, setFreqHz]       = useState(220)
-  const [filtHz, setFiltHz]       = useState(3000)
+  const [active, setActive]     = useState(false)
+  const [mode, setMode]         = useState<'synth' | 'mic'>('synth')
+  const [freqHz, setFreqHz]     = useState(220)
+  const [filtHz, setFiltHz]     = useState(3000)
 
-  const rigRef       = useRef<AudioRig | null>(null)
-  const activeRef    = useRef(false)
-  const mouseRef     = useRef({ x: 0, y: 0 })
-  const targetFreq   = useRef(220)
-  const targetFilt   = useRef(3000)
+  const rigRef          = useRef<AudioRig | null>(null)
+  const micStreamRef    = useRef<MediaStream | null>(null)
+  const activeRef       = useRef(false)
+  const modeRef         = useRef<'synth' | 'mic'>('synth')
+  const mouseRef        = useRef({ x: 0, y: 0 })
+  const targetFreq      = useRef(220)
+  const targetFilt      = useRef(3000)
+  const switchToMicRef  = useRef<(() => void) | null>(null)
+  const switchToSynthRef = useRef<(() => void) | null>(null)
 
   useEffect(() => {
     const canvas  = canvasRef.current
@@ -154,9 +159,49 @@ export function Frequency() {
       const rig = rigRef.current
       rig.gain.gain.setTargetAtTime(0, rig.ctx.currentTime, 0.2)
       setTimeout(() => { rig.ctx.close(); rigRef.current = null }, 500)
+      if (micStreamRef.current) {
+        micStreamRef.current.getTracks().forEach(t => t.stop())
+        micStreamRef.current = null
+      }
       activeRef.current = false
+      modeRef.current   = 'synth'
       setActive(false)
+      setMode('synth')
     }
+
+    // ── Mic toggle ─────────────────────────────────────────────
+    const switchToMic = async () => {
+      const rig = rigRef.current
+      if (!rig) return
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+        micStreamRef.current = stream
+        // Disconnect oscillators, connect mic
+        const micSource = rig.ctx.createMediaStreamSource(stream)
+        micSource.connect(rig.analyser)
+        // Silence the synth oscillators
+        rig.gain.gain.setTargetAtTime(0, rig.ctx.currentTime, 0.1)
+        modeRef.current = 'mic'
+        setMode('mic')
+      } catch {
+        // User denied mic — stay in synth mode
+      }
+    }
+
+    const switchToSynth = () => {
+      const rig = rigRef.current
+      if (!rig) return
+      if (micStreamRef.current) {
+        micStreamRef.current.getTracks().forEach(t => t.stop())
+        micStreamRef.current = null
+      }
+      rig.gain.gain.setTargetAtTime(0.55, rig.ctx.currentTime, 0.15)
+      modeRef.current = 'synth'
+      setMode('synth')
+    }
+
+    switchToMicRef.current   = switchToMic
+    switchToSynthRef.current = switchToSynth
 
     // ── ScrollTrigger ──────────────────────────────────────────
     const st = ScrollTrigger.create({
@@ -357,6 +402,26 @@ export function Frequency() {
                 {filtHz >= 1000 ? `${(filtHz / 1000).toFixed(1)} kHz` : `${filtHz} Hz`}
               </span>
             </div>
+          </div>
+        )}
+
+        {/* Mode toggle — SYNTH / MIC */}
+        {active && (
+          <div className="absolute top-8 right-8 z-10 flex items-center gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                if (mode === 'synth') {
+                  switchToMicRef.current?.()
+                } else {
+                  switchToSynthRef.current?.()
+                }
+              }}
+              className="font-mono text-[8px] tracking-[0.35em] uppercase px-3 py-1.5 border border-current transition-colors duration-200"
+              style={{ color: mode === 'mic' ? '#FF2D78' : '#00BFFF', borderColor: 'currentColor' }}
+            >
+              {mode === 'synth' ? 'SYNTH' : 'MIC'}
+            </button>
           </div>
         )}
 
