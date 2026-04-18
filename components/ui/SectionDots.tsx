@@ -20,12 +20,13 @@ export function SectionDots() {
   useEffect(() => {
     const triggers: ScrollTrigger[] = []
 
-    // Show dots when first WOW section enters, hide after finale leaves
+    // Show dots when first WOW section enters, hide when scrolled back above it
     const showST = ScrollTrigger.create({
       trigger: '#wow',
       start:   'top 80%',
       end:     'bottom top',
       onEnter:     () => setVisible(true),
+      onLeaveBack: () => setVisible(false),
     })
 
     const hideST = ScrollTrigger.create({

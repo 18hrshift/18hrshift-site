@@ -135,6 +135,13 @@ export function ParticleMorph() {
     const section = sectionRef.current
     if (!canvas || !section) return
 
+    let aborted = false
+    let doCleanup = () => {}
+
+    // Wait for fonts before sampling text — avoids sans-serif fallback on first visit
+    document.fonts.ready.then(() => {
+      if (aborted) return
+
     const W = canvas.clientWidth
     const H = canvas.clientHeight
 
@@ -241,12 +248,15 @@ export function ParticleMorph() {
 
     let raf: number
     let elapsed = 0
+    let lastTime = 0
     let running = false
 
-    const tick = () => {
+    const tick = (time: number) => {
       raf = requestAnimationFrame(tick)
-      if (!running) return
-      elapsed += 0.016
+      if (!running) { lastTime = 0; return }
+      const delta = lastTime > 0 ? Math.min((time - lastTime) / 1000, 0.05) : 0.016
+      lastTime = time
+      elapsed += delta
       uniforms.uTime.value = elapsed
 
       const mu = uniforms.uMouse.value
@@ -261,9 +271,9 @@ export function ParticleMorph() {
       { threshold: 0.01 },
     )
     observer.observe(section)
-    tick()
+    raf = requestAnimationFrame(tick)
 
-    return () => {
+    doCleanup = () => {
       cancelAnimationFrame(raf)
       observer.disconnect()
       window.removeEventListener('mousemove', onMouseMove)
@@ -272,6 +282,12 @@ export function ParticleMorph() {
       geo.dispose()
       mat.dispose()
       renderer.dispose()
+    }
+    }) // end document.fonts.ready.then
+
+    return () => {
+      aborted = true
+      doCleanup()
     }
   }, [])
 

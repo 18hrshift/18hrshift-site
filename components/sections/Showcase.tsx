@@ -51,7 +51,20 @@ function WaveformPanel() {
     const ro = new ResizeObserver(resize)
     ro.observe(canvas)
 
-    const draw = () => {
+    let running = false
+    let lastTime = 0
+    const visObs = new IntersectionObserver(
+      ([e]) => { running = e.isIntersecting },
+      { threshold: 0.01 },
+    )
+    visObs.observe(canvas)
+
+    const draw = (time: number) => {
+      rafRef.current = requestAnimationFrame(draw)
+      if (!running) { lastTime = 0; return }
+      const delta = lastTime > 0 ? Math.min((time - lastTime) / 1000, 0.05) : 0.016
+      lastTime = time
+
       const { width, height } = canvas
       const t = tRef.current
 
@@ -87,14 +100,14 @@ function WaveformPanel() {
       ctx.stroke()
       ctx.shadowBlur = 0
 
-      tRef.current += 0.035
-      rafRef.current = requestAnimationFrame(draw)
+      tRef.current += delta * 2.1  // 0.035/frame * 60fps = 2.1 rad/s
     }
 
-    draw()
+    rafRef.current = requestAnimationFrame(draw)
     return () => {
       cancelAnimationFrame(rafRef.current)
       ro.disconnect()
+      visObs.disconnect()
     }
   }, [])
 
@@ -190,10 +203,16 @@ function FieldPanel() {
     const c = 1.0
     const d = 0.7
 
-    let animating = true
+    let running = false
+    const visObs = new IntersectionObserver(
+      ([e]) => { running = e.isIntersecting },
+      { threshold: 0.01 },
+    )
+    visObs.observe(canvas)
 
     const draw = () => {
-      if (!animating) return
+      rafRef.current = requestAnimationFrame(draw)
+      if (!running) return
       const { width, height } = canvas
       const cx = width / 2
       const cy = height / 2
@@ -224,15 +243,13 @@ function FieldPanel() {
         ctx.fillStyle = 'rgba(5, 5, 8, 0.04)'
         ctx.fillRect(0, 0, width, height)
       }
-
-      rafRef.current = requestAnimationFrame(draw)
     }
 
-    draw()
+    rafRef.current = requestAnimationFrame(draw)
     return () => {
-      animating = false
       cancelAnimationFrame(rafRef.current)
       ro.disconnect()
+      visObs.disconnect()
     }
   }, [])
 

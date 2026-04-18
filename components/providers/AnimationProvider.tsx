@@ -10,17 +10,18 @@ export function AnimationProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Reveal all [data-reveal] elements on scroll
     const revealEls = document.querySelectorAll<HTMLElement>('[data-reveal]')
+    const triggers: ScrollTrigger[] = []
 
     revealEls.forEach((el) => {
-      ScrollTrigger.create({
+      triggers.push(ScrollTrigger.create({
         trigger: el,
         start: 'top 88%',
         onEnter: () => el.classList.add('is-visible'),
         once: true,
-      })
+      }))
     })
 
-    return () => ScrollTrigger.getAll().forEach((t) => t.kill())
+    return () => triggers.forEach((t) => t.kill())
   }, [])
 
   return <>{children}</>

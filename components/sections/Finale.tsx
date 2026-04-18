@@ -280,6 +280,7 @@ export function Finale() {
     // ── RAF ───────────────────────────────────────────────────────
     let raf: number
     let elapsed = 0
+    let lastTime = 0
     let running = false
 
     const observer = new IntersectionObserver(
@@ -288,10 +289,12 @@ export function Finale() {
     )
     observer.observe(section)
 
-    const tick = () => {
+    const tick = (time: number) => {
       raf = requestAnimationFrame(tick)
-      if (!running) return
-      elapsed += 0.016
+      if (!running) { lastTime = 0; return }
+      const delta = lastTime > 0 ? Math.min((time - lastTime) / 1000, 0.05) : 0.016
+      lastTime = time
+      elapsed += delta
 
       bgUniforms.uTime.value = elapsed
       ptUniforms.uTime.value = elapsed
@@ -314,7 +317,7 @@ export function Finale() {
       renderer.clearDepth()
       renderer.render(ptScene, ptCamera)
     }
-    tick()
+    raf = requestAnimationFrame(tick)
 
     return () => {
       cancelAnimationFrame(raf)

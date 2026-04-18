@@ -51,7 +51,7 @@ export function Cursor() {
     bindHovers()
 
     const observer = new MutationObserver(bindHovers)
-    observer.observe(document.body, { childList: true, subtree: false })
+    observer.observe(document.body, { childList: true, subtree: true })
 
     return () => {
       window.removeEventListener('mousemove', onMove)

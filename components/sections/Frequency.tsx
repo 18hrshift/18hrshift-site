@@ -267,6 +267,7 @@ export function Frequency() {
     // ── RAF loop ───────────────────────────────────────────────
     let raf: number
     let elapsed = 0
+    let lastTime = 0
     let running = false
 
     const observer = new IntersectionObserver(
@@ -275,10 +276,12 @@ export function Frequency() {
     )
     observer.observe(section)
 
-    const tick = () => {
+    const tick = (time: number) => {
       raf = requestAnimationFrame(tick)
-      if (!running) return
-      elapsed += 0.016
+      if (!running) { lastTime = 0; return }
+      const delta = lastTime > 0 ? Math.min((time - lastTime) / 1000, 0.05) : 0.016
+      lastTime = time
+      elapsed += delta
 
       const rig   = rigRef.current
       const isOn  = activeRef.current && !!rig
@@ -342,7 +345,7 @@ export function Frequency() {
 
       renderer.render(scene, camera)
     }
-    tick()
+    raf = requestAnimationFrame(tick)
 
     return () => {
       cancelAnimationFrame(raf)
@@ -390,7 +393,7 @@ export function Frequency() {
         )}
 
         {/* Live readout when active */}
-        {active && (
+        {active && mode === 'synth' && (
           <div className="absolute bottom-10 left-0 right-0 z-10 flex justify-center gap-12 pointer-events-none">
             <div className="flex flex-col items-center gap-1">
               <span className="font-mono text-[8px] text-muted tracking-[0.4em]">PITCH</span>
@@ -402,6 +405,13 @@ export function Frequency() {
                 {filtHz >= 1000 ? `${(filtHz / 1000).toFixed(1)} kHz` : `${filtHz} Hz`}
               </span>
             </div>
+          </div>
+        )}
+        {active && mode === 'mic' && (
+          <div className="absolute bottom-10 left-0 right-0 z-10 flex justify-center pointer-events-none">
+            <span className="font-mono text-[9px] text-magenta/70 tracking-[0.45em] uppercase animate-pulse">
+              MIC INPUT // LIVE
+            </span>
           </div>
         )}
 
