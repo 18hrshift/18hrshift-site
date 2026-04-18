@@ -237,9 +237,14 @@ export function Finale() {
         const p = self.progress
         ptUniforms.uProgress.value = p
         bgUniforms.uProgress.value = p
-        // Text fades in during supernova
+
+        // Text fades in during supernova peak
         const textOpacity = Math.max(0, (p - 0.72) / 0.18)
         textEl.style.opacity = String(Math.min(textOpacity, 1))
+
+        // Fade entire canvas to bg colour as section ends (last 8%)
+        const fadeOut = Math.max(0, (p - 0.92) / 0.08)
+        canvas.style.opacity = String(1 - fadeOut)
       },
     })
 
