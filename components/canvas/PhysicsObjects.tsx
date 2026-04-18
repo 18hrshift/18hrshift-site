@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useMemo } from 'react'
+import { useRef, useMemo, useEffect } from 'react'
 import { RigidBody } from '@react-three/rapier'
 import { MeshTransmissionMaterial } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
@@ -16,8 +16,11 @@ type ShapeConfig = {
   torusR?: number
 }
 
-const TYPES = ['icosahedron', 'octahedron', 'torus'] as const
+const TYPES  = ['icosahedron', 'octahedron', 'torus'] as const
 const COLORS = ['#00BFFF', '#FF2D78'] as const
+
+// Shared registry — PhysicsShape registers bodies, MouseRepulsor reads them
+const bodyRegistry: RapierRigidBody[] = []
 
 function rnd(min: number, max: number) { return Math.random() * (max - min) + min }
 
@@ -40,6 +43,16 @@ function generateShapes(): ShapeConfig[] {
 
 function PhysicsShape({ pos, color, size, type, torusR = 0.10 }: ShapeConfig) {
   const rigidRef = useRef<RapierRigidBody>(null)
+
+  useEffect(() => {
+    const body = rigidRef.current
+    if (!body) return
+    bodyRegistry.push(body)
+    return () => {
+      const idx = bodyRegistry.indexOf(body)
+      if (idx !== -1) bodyRegistry.splice(idx, 1)
+    }
+  }, [])
 
   const handleClick = () => {
     const b = rigidRef.current
@@ -105,44 +118,68 @@ export function PhysicsObjects() {
   )
 }
 
+const REPULSOR_RADIUS = 2.8  // influence zone
+const REPULSOR_FORCE  = 38   // base impulse strength
+
 export function MouseRepulsor() {
   const repulsorRef = useRef<RapierRigidBody>(null)
   const { camera }  = useThree()
   const mouse       = useMousePosition()
   const raycaster   = useMemo(() => new THREE.Raycaster(), [])
-  const plane       = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), []) // vertical z=0 plane
-  const target      = useMemo(() => new THREE.Vector3(), [])
-  const prevTarget  = useMemo(() => new THREE.Vector3(), [])
+  const plane       = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), [])
+  const pos         = useMemo(() => new THREE.Vector3(), [])
+  const prevPos     = useMemo(() => new THREE.Vector3(), [])
   const ndc         = useMemo(() => new THREE.Vector2(), [])
+  const bodyPos     = useMemo(() => new THREE.Vector3(), [])
+  const dir         = useMemo(() => new THREE.Vector3(), [])
 
   useFrame((_, delta) => {
     ndc.set(mouse.current.x, mouse.current.y)
     raycaster.setFromCamera(ndc, camera)
-    const hit = raycaster.ray.intersectPlane(plane, target)
-    if (!hit || !repulsorRef.current) return
+    const hit = raycaster.ray.intersectPlane(plane, pos)
+    if (!hit) return
 
-    // Mouse velocity in world space this frame
-    const vel = target.clone().sub(prevTarget).divideScalar(delta)
+    // Mouse velocity for directional punch
+    const vel = pos.clone().sub(prevPos).divideScalar(Math.max(delta, 0.001))
     const speed = vel.length()
 
-    repulsorRef.current.setNextKinematicTranslation(target)
-
-    // Blast nearby bodies when mouse moves fast
-    if (speed > 2.5) {
-      repulsorRef.current.setLinvel(
-        { x: vel.x * 0.6, y: vel.y * 0.6, z: vel.z * 0.6 },
-        true,
-      )
+    // Move collision sphere
+    if (repulsorRef.current) {
+      repulsorRef.current.setNextKinematicTranslation(pos)
+      if (speed > 0.5) {
+        repulsorRef.current.setLinvel({ x: vel.x, y: vel.y, z: vel.z }, true)
+      }
     }
 
-    prevTarget.copy(target)
+    // Direct force field — hit every body within REPULSOR_RADIUS
+    for (const body of bodyRegistry) {
+      const t = body.translation()
+      bodyPos.set(t.x, t.y, t.z)
+      const dist = bodyPos.distanceTo(pos)
+      if (dist > REPULSOR_RADIUS || dist < 0.01) continue
+
+      // Radial direction away from cursor + mouse velocity contribution
+      dir.subVectors(bodyPos, pos).normalize()
+
+      // Falloff: stronger when closer
+      const falloff = 1 - dist / REPULSOR_RADIUS
+      const magnitude = REPULSOR_FORCE * falloff * falloff
+
+      // Blend: radial push + mouse velocity direction
+      const vx = dir.x * magnitude + vel.x * falloff * 1.8
+      const vy = dir.y * magnitude + vel.y * falloff * 1.8 + 4 * falloff // slight upward lift
+      const vz = dir.z * magnitude + vel.z * falloff * 1.8
+
+      body.applyImpulse({ x: vx, y: vy, z: vz }, true)
+    }
+
+    prevPos.copy(pos)
   })
 
   return (
-    // Radius 1.8 — much larger collision footprint
     <RigidBody ref={repulsorRef} type="kinematicPosition" colliders="ball">
       <mesh visible={false}>
-        <sphereGeometry args={[2.0]} />
+        <sphereGeometry args={[REPULSOR_RADIUS * 0.5]} />
         <meshBasicMaterial />
       </mesh>
     </RigidBody>
