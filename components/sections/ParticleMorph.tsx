@@ -75,7 +75,9 @@ const fragmentShader = /* glsl */`
   }
 `
 
-function sampleTextPositions(text: string, count: number): Float32Array {
+type SampledText = { positions: Float32Array; splitX: number }
+
+function sampleTextPositions(text: string, count: number): SampledText {
   const W = 1200, H = 300
   const offscreen = document.createElement('canvas')
   offscreen.width  = W
@@ -100,8 +102,16 @@ function sampleTextPositions(text: string, count: number): Float32Array {
     }
   }
 
+  // Find actual split between "18" and "HRSHIFT" by measuring "18" width
+  const splitCtx = document.createElement('canvas').getContext('2d')!
+  splitCtx.font = `800 ${H * 0.78}px ${fontFamily}, sans-serif`
+  const fullW = splitCtx.measureText(text).width
+  const prefW = splitCtx.measureText('18').width
+  // The text is centred at W/2; left edge of text is at W/2 - fullW/2
+  const splitPixelX = W / 2 - fullW / 2 + prefW
+
   const scaleX = 7.2 / W
-  const scaleY = 7.2 / W  // maintain aspect ratio
+  const scaleY = 7.2 / W
 
   const positions = new Float32Array(count * 3)
   for (let i = 0; i < count; i++) {
@@ -110,7 +120,10 @@ function sampleTextPositions(text: string, count: number): Float32Array {
     positions[i * 3 + 1] = -(cy + Math.random() - 0.5 - H / 2) * scaleY
     positions[i * 3 + 2] = (Math.random() - 0.5) * 0.25
   }
-  return positions
+
+  // splitX in world space
+  const splitX = (splitPixelX - W / 2) * scaleX
+  return { positions, splitX }
 }
 
 export function ParticleMorph() {
@@ -134,7 +147,7 @@ export function ParticleMorph() {
     camera.position.z = 5
 
     // Target positions: sampled from rendered text
-    const targetPos = sampleTextPositions(TEXT, PARTICLE_COUNT)
+    const { positions: targetPos, splitX } = sampleTextPositions(TEXT, PARTICLE_COUNT)
 
     // Init positions: random sphere
     const initPos = new Float32Array(PARTICLE_COUNT * 3)
@@ -147,13 +160,12 @@ export function ParticleMorph() {
       initPos[i * 3 + 2] = r * Math.cos(phi)
     }
 
-    // Colors: blue for "18", magenta for "HRSHIFT"
+    // Colors: blue for "18", magenta for "HRSHIFT" — split measured from actual render
     const blue    = new THREE.Color('#00BFFF')
     const magenta = new THREE.Color('#FF2D78')
     const colors  = new Float32Array(PARTICLE_COUNT * 3)
     for (let i = 0; i < PARTICLE_COUNT; i++) {
-      // "18" spans roughly left 22% → x < -2.2 in world space
-      const c = targetPos[i * 3] < -2.2 ? blue : magenta
+      const c = targetPos[i * 3] < splitX ? blue : magenta
       colors[i * 3 + 0] = c.r
       colors[i * 3 + 1] = c.g
       colors[i * 3 + 2] = c.b

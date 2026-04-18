@@ -70,7 +70,7 @@ const fragmentShader = /* glsl */`
     float knot = sdKnot(p);
 
     // Gyroid bounded by sphere
-    float gy  = sdGyroid(p, 2.8, 0.055);
+    float gy  = sdGyroid(p, 2.8, 0.08);
     float sph = sdSphere(p, 1.55);
     float gyrObj = max(gy, sph);
 
@@ -180,7 +180,7 @@ const fragmentShader = /* glsl */`
 
       col  = surfCol * (diff * sha * 0.85 + diff2 + 0.12) * ao;
       col += hiCol * spec * sha * 0.6;
-      col += hiCol * rim  * 0.5 * ao;
+      col += hiCol * rim  * (0.5 + p01 * 0.6) * ao;
       col += hiCol * fres * 0.15;
     }
 

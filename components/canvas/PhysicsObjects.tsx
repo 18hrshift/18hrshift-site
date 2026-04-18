@@ -12,11 +12,11 @@ type ShapeConfig = {
   pos:    [number, number, number]
   color:  string
   size:   number
-  type:   'icosahedron' | 'octahedron' | 'torus'
+  type:   'icosahedron' | 'octahedron' | 'torus' | 'dodecahedron'
   torusR?: number
 }
 
-const TYPES  = ['icosahedron', 'octahedron', 'torus'] as const
+const TYPES  = ['icosahedron', 'octahedron', 'torus', 'dodecahedron'] as const
 const COLORS = ['#00BFFF', '#FF2D78'] as const
 
 // Shared registry — PhysicsShape registers bodies, MouseRepulsor reads them
@@ -82,9 +82,10 @@ function PhysicsShape({ pos, color, size, type, torusR = 0.10 }: ShapeConfig) {
       canSleep={false}
     >
       <mesh onClick={handleClick} castShadow>
-        {type === 'icosahedron' && <icosahedronGeometry args={[size, 0]} />}
-        {type === 'octahedron'  && <octahedronGeometry  args={[size, 0]} />}
-        {type === 'torus'       && <torusGeometry        args={[size, torusR, 16, 32]} />}
+        {type === 'icosahedron'  && <icosahedronGeometry  args={[size, 0]} />}
+        {type === 'octahedron'   && <octahedronGeometry   args={[size, 0]} />}
+        {type === 'torus'        && <torusGeometry         args={[size, torusR, 16, 32]} />}
+        {type === 'dodecahedron' && <dodecahedronGeometry  args={[size, 0]} />}
 
         <MeshTransmissionMaterial
           samples={4}
