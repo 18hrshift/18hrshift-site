@@ -118,8 +118,8 @@ export function PhysicsObjects() {
   )
 }
 
-const REPULSOR_RADIUS = 2.8  // influence zone
-const REPULSOR_FORCE  = 38   // base impulse strength
+const REPULSOR_RADIUS = 2.2  // influence zone
+const REPULSOR_FORCE  = 18   // base impulse strength
 
 export function MouseRepulsor() {
   const repulsorRef = useRef<RapierRigidBody>(null)
@@ -166,9 +166,9 @@ export function MouseRepulsor() {
       const magnitude = REPULSOR_FORCE * falloff * falloff
 
       // Blend: radial push + mouse velocity direction
-      const vx = dir.x * magnitude + vel.x * falloff * 1.8
-      const vy = dir.y * magnitude + vel.y * falloff * 1.8 + 4 * falloff // slight upward lift
-      const vz = dir.z * magnitude + vel.z * falloff * 1.8
+      const vx = dir.x * magnitude + vel.x * falloff * 0.9
+      const vy = dir.y * magnitude + vel.y * falloff * 0.9 + 2 * falloff
+      const vz = dir.z * magnitude + vel.z * falloff * 0.9
 
       body.applyImpulse({ x: vx, y: vy, z: vz }, true)
     }
