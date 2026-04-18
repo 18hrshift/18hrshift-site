@@ -118,8 +118,8 @@ export function PhysicsObjects() {
   )
 }
 
-const REPULSOR_RADIUS = 2.2  // influence zone
-const REPULSOR_FORCE  = 18   // base impulse strength
+const REPULSOR_RADIUS = 0.9  // influence zone
+const REPULSOR_FORCE  = 10   // base impulse strength
 
 export function MouseRepulsor() {
   const repulsorRef = useRef<RapierRigidBody>(null)
