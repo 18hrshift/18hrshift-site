@@ -19,7 +19,7 @@ const fragmentShader = /* glsl */`
   uniform vec2  uMouse;
   uniform float uProgress;
 
-  #define MAX_STEPS 120
+  #define MAX_STEPS 80
   #define MAX_DIST  18.0
   #define EPSILON   0.0008
 
@@ -105,7 +105,7 @@ const fragmentShader = /* glsl */`
   float softShadow(vec3 ro, vec3 rd, float mint, float maxt, float k) {
     float res = 1.0;
     float t   = mint;
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < 16; i++) {
       float h = sdVoid(ro + rd * t);
       if (h < EPSILON) return 0.0;
       res = min(res, k * h / t);
@@ -227,15 +227,17 @@ export function Void() {
     const W = canvas.clientWidth
     const H = canvas.clientHeight
 
+    // Raymarcher is fragment-bound — cap dpr at 1.0 for acceptable fps on all devices
+    const dprVoid = Math.min(window.devicePixelRatio, 1.0)
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: false, antialias: false })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
+    renderer.setPixelRatio(dprVoid)
     renderer.setSize(W, H, false)
 
     const scene  = new THREE.Scene()
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
 
     const uniforms = {
-      uResolution: { value: new THREE.Vector2(W * Math.min(window.devicePixelRatio, 1.5), H * Math.min(window.devicePixelRatio, 1.5)) },
+      uResolution: { value: new THREE.Vector2(W * dprVoid, H * dprVoid) },
       uTime:       { value: 0 },
       uMouse:      { value: new THREE.Vector2(0, 0) },
       uProgress:   { value: 0 },
@@ -263,11 +265,10 @@ export function Void() {
     }
 
     const onResize = () => {
-      const dpr = Math.min(window.devicePixelRatio, 1.5)
       const w = canvas.clientWidth
       const h = canvas.clientHeight
       renderer.setSize(w, h, false)
-      uniforms.uResolution.value.set(w * dpr, h * dpr)
+      uniforms.uResolution.value.set(w * dprVoid, h * dprVoid)
     }
 
     window.addEventListener('mousemove', onMouseMove, { passive: true })
@@ -275,8 +276,11 @@ export function Void() {
 
     let raf: number
     let elapsed = 0
+    let running = false
+
     const tick = () => {
       raf = requestAnimationFrame(tick)
+      if (!running) return
       elapsed += 0.016
       uniforms.uTime.value = elapsed
 
@@ -286,10 +290,17 @@ export function Void() {
 
       renderer.render(scene, camera)
     }
+
+    const observer = new IntersectionObserver(
+      ([e]) => { running = e.isIntersecting },
+      { threshold: 0.01 },
+    )
+    observer.observe(section)
     tick()
 
     return () => {
       cancelAnimationFrame(raf)
+      observer.disconnect()
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('resize',    onResize)
       st.kill()

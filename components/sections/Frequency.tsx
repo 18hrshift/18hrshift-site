@@ -96,8 +96,9 @@ export function Frequency() {
 
     const scene  = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 100)
-    camera.position.set(0, 3.8, 5.2)
-    camera.lookAt(0, 0, 0)
+    // Actual position set each tick via orbit; initialise close to that orbit to avoid pop
+    camera.position.set(0, 2.0, 5.5)
+    camera.lookAt(0, 0.8, 0)
 
     // ── Bar geometry (InstancedMesh) ───────────────────────────
     // CylinderGeometry reads clearly from any camera angle; boxes show edge-on to most bars
@@ -221,9 +222,17 @@ export function Frequency() {
     // ── RAF loop ───────────────────────────────────────────────
     let raf: number
     let elapsed = 0
+    let running = false
+
+    const observer = new IntersectionObserver(
+      ([e]) => { running = e.isIntersecting },
+      { threshold: 0.01 },
+    )
+    observer.observe(section)
 
     const tick = () => {
       raf = requestAnimationFrame(tick)
+      if (!running) return
       elapsed += 0.016
 
       const rig   = rigRef.current
@@ -292,6 +301,7 @@ export function Frequency() {
 
     return () => {
       cancelAnimationFrame(raf)
+      observer.disconnect()
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('resize',    onResize)
       canvas.removeEventListener('click', onClick)

@@ -275,9 +275,17 @@ export function Finale() {
     // ── RAF ───────────────────────────────────────────────────────
     let raf: number
     let elapsed = 0
+    let running = false
+
+    const observer = new IntersectionObserver(
+      ([e]) => { running = e.isIntersecting },
+      { threshold: 0.01 },
+    )
+    observer.observe(section)
 
     const tick = () => {
       raf = requestAnimationFrame(tick)
+      if (!running) return
       elapsed += 0.016
 
       bgUniforms.uTime.value = elapsed
@@ -305,6 +313,7 @@ export function Finale() {
 
     return () => {
       cancelAnimationFrame(raf)
+      observer.disconnect()
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('resize',    onResize)
       st.kill()

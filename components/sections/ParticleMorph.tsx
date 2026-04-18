@@ -229,22 +229,31 @@ export function ParticleMorph() {
 
     let raf: number
     let elapsed = 0
+    let running = false
+
     const tick = () => {
       raf = requestAnimationFrame(tick)
+      if (!running) return
       elapsed += 0.016
       uniforms.uTime.value = elapsed
 
-      // Smooth mouse follow
       const mu = uniforms.uMouse.value
       mu.x += (targetMouse.x - mu.x) * 0.07
       mu.y += (targetMouse.y - mu.y) * 0.07
 
       renderer.render(scene, camera)
     }
+
+    const observer = new IntersectionObserver(
+      ([e]) => { running = e.isIntersecting },
+      { threshold: 0.01 },
+    )
+    observer.observe(section)
     tick()
 
     return () => {
       cancelAnimationFrame(raf)
+      observer.disconnect()
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('resize',    onResize)
       st.kill()
