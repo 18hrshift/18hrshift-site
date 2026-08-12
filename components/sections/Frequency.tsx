@@ -114,29 +114,53 @@ export function Frequency() {
 
     // ── Bar geometry (InstancedMesh) ───────────────────────────
     // CylinderGeometry reads clearly from any camera angle; boxes show edge-on to most bars
-    const barGeo = new THREE.CylinderGeometry(0.02, 0.055, 1, 6)
+    const barGeo = new THREE.CylinderGeometry(0.05, 0.1, 1, 8)
     barGeo.translate(0, 0.5, 0)
     const barMat = new THREE.MeshBasicMaterial({ vertexColors: true })
     const bars   = new THREE.InstancedMesh(barGeo, barMat, BAR_COUNT)
     bars.instanceMatrix.setUsage(THREE.DynamicDrawUsage)
     scene.add(bars)
 
+    // Additive glow layer around each bar for a luminous halo
+    const glowMat  = new THREE.MeshBasicMaterial({
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.38,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    })
+    const glowBars = new THREE.InstancedMesh(barGeo, glowMat, BAR_COUNT)
+    glowBars.instanceMatrix.setUsage(THREE.DynamicDrawUsage)
+    scene.add(glowBars)
+
     // Pre-compute bar colors — full saturation, high lightness so they read on dark bg
     const color = new THREE.Color()
     for (let i = 0; i < BAR_COUNT; i++) {
       const t   = 0.5 - 0.5 * Math.cos((i / BAR_COUNT) * Math.PI * 2)
       const hue = lerp(0.545, 0.94, t) % 1.0
-      color.setHSL(hue, 1.0, 0.68)
+      color.setHSL(hue, 1.0, 0.72)
       bars.setColorAt(i, color)
+      glowBars.setColorAt(i, color)
     }
-    if (bars.instanceColor) bars.instanceColor.needsUpdate = true
+    if (bars.instanceColor)    bars.instanceColor.needsUpdate = true
+    if (glowBars.instanceColor) glowBars.instanceColor.needsUpdate = true
 
     // ── Base ring (torus at floor) ─────────────────────────────
-    const ringGeo = new THREE.TorusGeometry(OUTER_R, 0.012, 8, 128)
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0x00BFFF, transparent: true, opacity: 0.35 })
+    const ringGeo = new THREE.TorusGeometry(OUTER_R, 0.02, 8, 128)
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0x00BFFF, transparent: true, opacity: 0.5 })
     const ring    = new THREE.Mesh(ringGeo, ringMat)
     ring.rotation.x = Math.PI / 2
     scene.add(ring)
+
+    // Soft floor glow disc
+    const floorGeo = new THREE.CircleGeometry(OUTER_R * 0.96, 64)
+    const floorMat = new THREE.MeshBasicMaterial({
+      color: 0x0055AA, transparent: true, opacity: 0.16, depthWrite: false,
+    })
+    const floor = new THREE.Mesh(floorGeo, floorMat)
+    floor.rotation.x = -Math.PI / 2
+    floor.position.y = -0.02
+    scene.add(floor)
 
     // ── Inner waveform ring ────────────────────────────────────
     const wavePositions = new Float32Array((BAR_COUNT + 1) * 3)
@@ -334,9 +358,9 @@ export function Frequency() {
 
         let amp: number
         if (isOn) {
-          amp = (fftBuf[i] / 255) * 3.2 + 0.08
+          amp = (fftBuf[i] / 255) * 3.6 + 0.10
         } else {
-          amp = Math.abs(Math.sin(elapsed * 1.1 + (i / BAR_COUNT) * Math.PI * 6)) * 1.4 + 0.12
+          amp = Math.abs(Math.sin(elapsed * 1.1 + (i / BAR_COUNT) * Math.PI * 6)) * 1.6 + 0.22
         }
 
         dummy.position.set(x, 0, z)
@@ -344,8 +368,14 @@ export function Frequency() {
         dummy.scale.set(1, amp, 1)
         dummy.updateMatrix()
         bars.setMatrixAt(i, dummy.matrix)
+
+        // Glow layer: same bar, scaled slightly larger for a halo
+        dummy.scale.set(1.45, amp * 1.3, 1.45)
+        dummy.updateMatrix()
+        glowBars.setMatrixAt(i, dummy.matrix)
       }
-      bars.instanceMatrix.needsUpdate = true
+      bars.instanceMatrix.needsUpdate   = true
+      glowBars.instanceMatrix.needsUpdate = true
 
       // Update inner waveform rings
       for (let i = 0; i <= BAR_COUNT; i++) {
@@ -393,7 +423,9 @@ export function Frequency() {
       if (micStreamRef.current) { micStreamRef.current.getTracks().forEach(t => t.stop()); micStreamRef.current = null }
       if (rigRef.current) { rigRef.current.ctx.close(); rigRef.current = null }
       barGeo.dispose(); barMat.dispose()
+      glowMat.dispose()
       ringGeo.dispose(); ringMat.dispose()
+      floorGeo.dispose(); floorMat.dispose()
       waveGeo.dispose(); waveMat.dispose()
       wave2Geo.dispose(); wave2Mat.dispose()
       renderer.dispose()

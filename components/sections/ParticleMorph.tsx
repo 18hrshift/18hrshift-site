@@ -204,16 +204,50 @@ export function ParticleMorph() {
     })
 
     const points = new THREE.Points(geo, mat)
-    scene.add(points)
 
-    // Click-driven morph: scatter (0) ↔ formed text (1)
+    // Wrap in a group so drag gestures can rotate the whole object
+    const rotGroup = new THREE.Group()
+    rotGroup.add(points)
+    scene.add(rotGroup)
+
+    // Click/drag: a tap toggles form↔scatter; a drag rotates the object
     const progressRef = { value: 0 }
     const targetRef   = { value: 0 }
 
-    const onClick = () => {
-      const next = targetRef.value < 0.5 ? 1 : 0
-      targetRef.value = next
-      setFormed(next === 1)
+    let pointerDown = false
+    let dragging    = false
+    let downX = 0, downY = 0, downT = 0
+    let lastX = 0, lastY = 0
+
+    const onPointerDown = (e: PointerEvent) => {
+      pointerDown = true
+      dragging    = false
+      downX = lastX = e.clientX
+      downY = lastY = e.clientY
+      downT = performance.now()
+    }
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (!pointerDown) return
+      if (!dragging && Math.hypot(e.clientX - downX, e.clientY - downY) > 6) dragging = true
+      if (dragging) {
+        const dx = e.clientX - lastX
+        const dy = e.clientY - lastY
+        rotGroup.rotation.y += dx * 0.01
+        rotGroup.rotation.x  = THREE.MathUtils.clamp(rotGroup.rotation.x + dy * 0.006, -1.2, 1.2)
+        lastX = e.clientX
+        lastY = e.clientY
+      }
+    }
+
+    const onPointerUp = (e: PointerEvent) => {
+      const isTap = !dragging && performance.now() - downT < 400
+      pointerDown = false
+      if (isTap) {
+        const next = targetRef.value < 0.5 ? 1 : 0
+        targetRef.value = next
+        setFormed(next === 1)
+      }
     }
 
     // Mouse → world XY at z=0 plane
@@ -243,7 +277,9 @@ export function ParticleMorph() {
 
     window.addEventListener('mousemove', onMouseMove, { passive: true })
     window.addEventListener('resize',    onResize,    { passive: true })
-    canvas.addEventListener('click', onClick)
+    canvas.addEventListener('pointerdown', onPointerDown)
+    canvas.addEventListener('pointermove', onPointerMove)
+    canvas.addEventListener('pointerup',   onPointerUp)
 
     let raf: number
     let elapsed = 0
@@ -283,7 +319,9 @@ export function ParticleMorph() {
       observer.disconnect()
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('resize',    onResize)
-      canvas.removeEventListener('click', onClick)
+      canvas.removeEventListener('pointerdown', onPointerDown)
+      canvas.removeEventListener('pointermove', onPointerMove)
+      canvas.removeEventListener('pointerup',   onPointerUp)
       geo.dispose()
       mat.dispose()
       renderer.dispose()
@@ -315,7 +353,7 @@ export function ParticleMorph() {
         {/* Click cue */}
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 pointer-events-none">
           <span className="font-mono text-[9px] text-muted/50 tracking-[0.4em]">
-            {formed ? 'CLICK TO DISPERSE' : 'CLICK TO FORM'}
+            {formed ? 'DRAG TO ROTATE · CLICK TO DISPERSE' : 'CLICK TO FORM'}
           </span>
           <div className="w-px h-8 bg-gradient-to-b from-blue/40 to-transparent animate-pulse" />
         </div>
