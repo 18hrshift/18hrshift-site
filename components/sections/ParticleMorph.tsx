@@ -1,11 +1,7 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-
-gsap.registerPlugin(ScrollTrigger)
 
 const PARTICLE_COUNT = 15_000
 const TEXT = '18HRSHIFT'
@@ -129,6 +125,7 @@ function sampleTextPositions(text: string, count: number): SampledText {
 export function ParticleMorph() {
   const sectionRef = useRef<HTMLElement>(null)
   const canvasRef  = useRef<HTMLCanvasElement>(null)
+  const [formed, setFormed] = useState(false)
 
   useEffect(() => {
     const canvas  = canvasRef.current
@@ -209,14 +206,15 @@ export function ParticleMorph() {
     const points = new THREE.Points(geo, mat)
     scene.add(points)
 
-    // ScrollTrigger drives progress 0 → 1 over the tall section
-    const st = ScrollTrigger.create({
-      trigger: section,
-      start:   'top top',
-      end:     'bottom bottom',
-      scrub:   1.4,
-      onUpdate: (self) => { uniforms.uProgress.value = self.progress },
-    })
+    // Click-driven morph: scatter (0) ↔ formed text (1)
+    const progressRef = { value: 0 }
+    const targetRef   = { value: 0 }
+
+    const onClick = () => {
+      const next = targetRef.value < 0.5 ? 1 : 0
+      targetRef.value = next
+      setFormed(next === 1)
+    }
 
     // Mouse → world XY at z=0 plane
     const targetMouse = new THREE.Vector2(9999, 9999)
@@ -245,6 +243,7 @@ export function ParticleMorph() {
 
     window.addEventListener('mousemove', onMouseMove, { passive: true })
     window.addEventListener('resize',    onResize,    { passive: true })
+    canvas.addEventListener('click', onClick)
 
     let raf: number
     let elapsed = 0
@@ -258,6 +257,12 @@ export function ParticleMorph() {
       lastTime = time
       elapsed += delta
       uniforms.uTime.value = elapsed
+
+      // Smoothly chase the clicked target — gather slightly slower than scatter
+      const diff = targetRef.value - progressRef.value
+      const k = (diff > 0 ? 2.6 : 3.4)
+      progressRef.value += diff * (1 - Math.exp(-k * delta))
+      uniforms.uProgress.value = progressRef.value
 
       const mu = uniforms.uMouse.value
       mu.x += (targetMouse.x - mu.x) * 0.07
@@ -278,7 +283,7 @@ export function ParticleMorph() {
       observer.disconnect()
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('resize',    onResize)
-      st.kill()
+      canvas.removeEventListener('click', onClick)
       geo.dispose()
       mat.dispose()
       renderer.dispose()
@@ -295,9 +300,9 @@ export function ParticleMorph() {
     <section
       ref={sectionRef}
       id="wow"
-      className="relative h-[300vh] bg-bg"
+      className="relative h-screen bg-bg overflow-hidden"
     >
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+      <div className="absolute inset-0 w-full h-full cursor-pointer">
         {/* Label */}
         <div className="absolute top-8 left-0 right-0 z-10 flex justify-center pointer-events-none">
           <span className="font-mono text-[9px] text-muted tracking-[0.5em] uppercase">
@@ -307,9 +312,11 @@ export function ParticleMorph() {
 
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Scroll cue */}
+        {/* Click cue */}
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 pointer-events-none">
-          <span className="font-mono text-[9px] text-muted/50 tracking-[0.4em]">SCROLL TO FORM</span>
+          <span className="font-mono text-[9px] text-muted/50 tracking-[0.4em]">
+            {formed ? 'CLICK TO DISPERSE' : 'CLICK TO FORM'}
+          </span>
           <div className="w-px h-8 bg-gradient-to-b from-blue/40 to-transparent animate-pulse" />
         </div>
       </div>

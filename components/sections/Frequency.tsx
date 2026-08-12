@@ -11,12 +11,17 @@ const BAR_COUNT  = 128
 const OUTER_R    = 2.4
 const INNER_R    = 1.35
 
-// Frequency range for mouse X (logarithmic)
-const FREQ_MIN   = 60
-const FREQ_MAX   = 880
+// Frequency range for the arpeggio root (logged by mouse X)
+const ROOT_MIN   = 110   // A2
+const ROOT_MAX   = 440   // A4
 // Filter range for mouse Y (logarithmic)
 const FILT_MIN   = 300
 const FILT_MAX   = 14000
+
+// Step sequencer: minor-key run that keeps the sound genuinely musical,
+// not a static drone. Index-gated so it always evolves on its own.
+const STEP_MS    = 135                       // ~111 BPM 8th notes
+const SEQUENCE   = [0, 0, 3, 7, 5, 7, 10, 12, 10, 12, 15, 12, 10, 7, 8, 7]
 
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t }
 function logMap(t: number, lo: number, hi: number) {
@@ -52,9 +57,9 @@ function buildAudio(): AudioRig {
   osc2.type = 'sawtooth';  osc2.frequency.value = 220; osc2.detune.value = 9
   osc3.type = 'square';    osc3.frequency.value = 110; osc3.detune.value = -4
 
-  const g1 = ctx.createGain(); g1.gain.value = 0.45
-  const g2 = ctx.createGain(); g2.gain.value = 0.40
-  const g3 = ctx.createGain(); g3.gain.value = 0.18
+  const g1 = ctx.createGain(); g1.gain.value = 0.34
+  const g2 = ctx.createGain(); g2.gain.value = 0.30
+  const g3 = ctx.createGain(); g3.gain.value = 0.22
 
   osc1.connect(g1); g1.connect(filter)
   osc2.connect(g2); g2.connect(filter)
@@ -77,11 +82,13 @@ export function Frequency() {
 
   const rigRef          = useRef<AudioRig | null>(null)
   const micStreamRef    = useRef<MediaStream | null>(null)
+  const schedRef        = useRef<ReturnType<typeof setInterval> | null>(null)
+  const genRef          = useRef(0)
+  const rootRef         = useRef(220)
+  const stepRef         = useRef(0)
   const activeRef       = useRef(false)
   const modeRef         = useRef<'synth' | 'mic'>('synth')
   const mouseRef        = useRef({ x: 0, y: 0 })
-  const targetFreq      = useRef(220)
-  const targetFilt      = useRef(3000)
   const switchToMicRef  = useRef<(() => void) | null>(null)
   const switchToSynthRef = useRef<(() => void) | null>(null)
 
@@ -153,12 +160,21 @@ export function Frequency() {
     const waveBuf = new Uint8Array(BAR_COUNT)
     const dummy   = new THREE.Object3D()
 
-    // ── Shared shutdown ────────────────────────────────────────
+    // Shared shutdown: immediate, race-free teardown.
     const shutdownAudio = () => {
-      if (!activeRef.current || !rigRef.current) return
+      genRef.current++               // invalidate any in-flight async (mic)
+      if (schedRef.current) { clearInterval(schedRef.current); schedRef.current = null }
       const rig = rigRef.current
-      rig.gain.gain.setTargetAtTime(0, rig.ctx.currentTime, 0.2)
-      setTimeout(() => { rig.ctx.close(); rigRef.current = null }, 500)
+      if (rig) {
+        try {
+          rig.gain.gain.cancelScheduledValues(rig.ctx.currentTime)
+          rig.gain.gain.setTargetAtTime(0, rig.ctx.currentTime, 0.02)
+          rig.osc1.stop(); rig.osc2.stop(); rig.osc3.stop()
+        } catch {}
+        // Null the ref synchronously so a fresh click can't be clobbered
+        rigRef.current = null
+        setTimeout(() => { try { rig.ctx.close() } catch {} }, 120)
+      }
       if (micStreamRef.current) {
         micStreamRef.current.getTracks().forEach(t => t.stop())
         micStreamRef.current = null
@@ -169,12 +185,33 @@ export function Frequency() {
       setMode('synth')
     }
 
+    // Step-sequencer: plays the arpeggio so the sound never sits on one note.
+    const startSequencer = () => {
+      if (schedRef.current) return
+      stepRef.current = 0
+      schedRef.current = setInterval(() => {
+        const rig = rigRef.current
+        if (!rig || modeRef.current !== 'synth') return
+        const gen = genRef.current
+        const semi = SEQUENCE[stepRef.current % SEQUENCE.length]
+        stepRef.current++
+        const freq = rootRef.current * Math.pow(2, semi / 12)
+        const now  = rig.ctx.currentTime
+        rig.osc1.frequency.setTargetAtTime(freq,     now, 0.02)
+        rig.osc2.frequency.setTargetAtTime(freq * 1.013, now, 0.02)
+        rig.osc3.frequency.setTargetAtTime(freq / 2, now, 0.04)
+        if (gen !== genRef.current) return
+      }, STEP_MS)
+    }
+
     // ── Mic toggle ─────────────────────────────────────────────
     const switchToMic = async () => {
       const rig = rigRef.current
       if (!rig) return
+      const gen = genRef.current
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+        if (gen !== genRef.current) { stream.getTracks().forEach(t => t.stop()); return }
         micStreamRef.current = stream
         // Disconnect oscillators, connect mic
         const micSource = rig.ctx.createMediaStreamSource(stream)
@@ -195,7 +232,7 @@ export function Frequency() {
         micStreamRef.current.getTracks().forEach(t => t.stop())
         micStreamRef.current = null
       }
-      rig.gain.gain.setTargetAtTime(0.55, rig.ctx.currentTime, 0.15)
+      rig.gain.gain.setTargetAtTime(0.5, rig.ctx.currentTime, 0.15)
       modeRef.current = 'synth'
       setMode('synth')
     }
@@ -219,20 +256,15 @@ export function Frequency() {
       const ny = 1 - (e.clientY / window.innerHeight)
       mouseRef.current = { x: nx * 2 - 1, y: ny * 2 - 1 }
 
-      const f = Math.round(logMap(nx, FREQ_MIN, FREQ_MAX))
-      const g = Math.round(logMap(ny, FILT_MIN, FILT_MAX))
-      targetFreq.current = f
-      targetFilt.current = g
-      setFreqHz(f)
+      const root = Math.round(logMap(nx, ROOT_MIN, ROOT_MAX))
+      const g    = Math.round(logMap(ny, FILT_MIN, FILT_MAX))
+      rootRef.current = root
+      setFreqHz(root)
       setFiltHz(g)
 
       if (rigRef.current) {
-        const { osc1, osc2, osc3, filter, ctx } = rigRef.current
-        const now = ctx.currentTime
-        osc1.frequency.setTargetAtTime(f,       now, 0.06)
-        osc2.frequency.setTargetAtTime(f,       now, 0.06)
-        osc3.frequency.setTargetAtTime(f / 2,   now, 0.06)
-        filter.frequency.setTargetAtTime(g,     now, 0.08)
+        const now = rigRef.current.ctx.currentTime
+        rigRef.current.filter.frequency.setTargetAtTime(g, now, 0.08)
       }
     }
 
@@ -240,13 +272,16 @@ export function Frequency() {
     const onClick = async () => {
       if (!activeRef.current) {
         // Activate
+        const gen = ++genRef.current
         const rig = buildAudio()
         rigRef.current = rig
         activeRef.current = true
         setActive(true)
         if (rig.ctx.state === 'suspended') await rig.ctx.resume()
-        // Fade in
-        rig.gain.gain.setTargetAtTime(0.55, rig.ctx.currentTime, 0.3)
+        if (gen !== genRef.current) return
+        rig.gain.gain.setTargetAtTime(0.5, rig.ctx.currentTime, 0.3)
+        rig.filter.frequency.setValueAtTime(3000, rig.ctx.currentTime)
+        startSequencer()
       } else {
         shutdownAudio()
       }
@@ -354,6 +389,8 @@ export function Frequency() {
       window.removeEventListener('resize',    onResize)
       canvas.removeEventListener('click', onClick)
       st.kill()
+      if (schedRef.current) { clearInterval(schedRef.current); schedRef.current = null }
+      if (micStreamRef.current) { micStreamRef.current.getTracks().forEach(t => t.stop()); micStreamRef.current = null }
       if (rigRef.current) { rigRef.current.ctx.close(); rigRef.current = null }
       barGeo.dispose(); barMat.dispose()
       ringGeo.dispose(); ringMat.dispose()
@@ -436,10 +473,15 @@ export function Frequency() {
         )}
 
         {/* Mouse hint */}
-        <div className="absolute bottom-10 right-8 z-10 pointer-events-none">
+        <div className="absolute bottom-10 right-8 z-10 flex flex-col items-end gap-2 pointer-events-none">
           {active && (
             <span className="font-mono text-[8px] text-muted/40 tracking-[0.3em]">
-              X:PITCH&nbsp;&nbsp;Y:FILTER
+              X:KEY&nbsp;&nbsp;Y:CUTOFF
+            </span>
+          )}
+          {active && (
+            <span className="font-mono text-[8px] text-muted/50 tracking-[0.3em]">
+              CLICK TO STOP
             </span>
           )}
         </div>
