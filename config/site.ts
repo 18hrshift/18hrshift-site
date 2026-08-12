@@ -32,7 +32,7 @@ export const site = {
 
   endpoint: {
     prompt: 'TRANSMIT >',
-    email: 'signal@18hrshift.com',
+    email: 'admin@18hrshift.com',
     socials: [
       { label: 'GH', href: 'https://github.com/18hrshift' },
     ],
