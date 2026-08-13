@@ -47,10 +47,10 @@ const vertexShader = /* glsl */`
     }
 
     vColor = aColor;
-    vAlpha = 0.55 + 0.45 * localP;
+    vAlpha = 0.65 + 0.35 * localP;
 
     vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
-    gl_PointSize = 2.2 + abs(breathe) * 40.0;
+    gl_PointSize = 2.8 + abs(breathe) * 40.0;
     gl_Position = projectionMatrix * mvPos;
   }
 `
@@ -126,6 +126,8 @@ export function ParticleMorph() {
   const sectionRef = useRef<HTMLElement>(null)
   const canvasRef  = useRef<HTMLCanvasElement>(null)
   const [formed, setFormed] = useState(false)
+  const interactedRef = useRef(false)
+  const enteredRef    = useRef(0)
 
   useEffect(() => {
     const canvas  = canvasRef.current
@@ -220,6 +222,7 @@ export function ParticleMorph() {
     let lastX = 0, lastY = 0
 
     const onPointerDown = (e: PointerEvent) => {
+      interactedRef.current = true
       pointerDown = true
       dragging    = false
       downX = lastX = e.clientX
@@ -300,6 +303,12 @@ export function ParticleMorph() {
       progressRef.value += diff * (1 - Math.exp(-k * delta))
       uniforms.uProgress.value = progressRef.value
 
+      // If the user hasn't interacted, auto-form the wordmark after it's on screen
+      if (!interactedRef.current && enteredRef.current > 0
+          && performance.now() - enteredRef.current > 700) {
+        targetRef.value = 1
+      }
+
       const mu = uniforms.uMouse.value
       mu.x += (targetMouse.x - mu.x) * 0.07
       mu.y += (targetMouse.y - mu.y) * 0.07
@@ -308,7 +317,10 @@ export function ParticleMorph() {
     }
 
     const observer = new IntersectionObserver(
-      ([e]) => { running = e.isIntersecting },
+      ([e]) => {
+        running = e.isIntersecting
+        if (e.isIntersecting && enteredRef.current === 0) enteredRef.current = performance.now()
+      },
       { threshold: 0.01 },
     )
     observer.observe(section)

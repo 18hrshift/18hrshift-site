@@ -91,17 +91,23 @@ function buildTextSDF(): THREE.DataTexture {
   const dbg2 = dt2(bg)
   const tex = new Uint8Array(W * H * 4)
   for (let i = 0; i < W * H; i++) {
+    const x = i % W
+    const y = (i / W) | 0                 // 0 = top of the rendered text
     const dIn  = Math.sqrt(dfg2[i])
     const dOut = Math.sqrt(dbg2[i])
-    const sdf  = dIn - dOut                                  // <0 inside, >0 outside
+    const sdf  = dIn - dOut               // <0 inside, >0 outside
     const v    = Math.round(THREE.MathUtils.clamp((sdf + SDF_SUPPORT) / (2 * SDF_SUPPORT), 0, 1) * 255)
-    tex[i * 4 + 0] = v
-    tex[i * 4 + 1] = v
-    tex[i * 4 + 2] = v
-    tex[i * 4 + 3] = 255
+    // Write bottom-first so that with flipY=false, texture v=0 is the bottom
+    // of the wordmark → a positive world-Y maps to a rising v (upright, unmirrored).
+    const dst = ((H - 1 - y) * W + x) * 4
+    tex[dst + 0] = v
+    tex[dst + 1] = v
+    tex[dst + 2] = v
+    tex[dst + 3] = 255
   }
 
   const dtex = new THREE.DataTexture(tex, W, H, THREE.RGBAFormat)
+  dtex.flipY = false
   dtex.minFilter = THREE.LinearFilter
   dtex.magFilter = THREE.LinearFilter
   dtex.needsUpdate = true
@@ -241,86 +247,95 @@ const fragmentShader = /* glsl */`
   }
 
   void main() {
-    vec2 uv = (gl_FragCoord.xy - uResolution * 0.5) / uResolution.y;
+    vec2 baseUV = (gl_FragCoord.xy - uResolution * 0.5) / uResolution.y;
+    vec2 offset = vec2(0.35, -0.35) / uResolution.y;
 
-    float camYaw   = uMouse.x * 0.5;
-    float camPitch = uMouse.y * 0.26;
-    vec3 ro = vec3(0.0, 0.0, 3.8);
-    ro.xz = rot2(camYaw)   * ro.xz;
-    ro.yz = rot2(-camPitch) * ro.yz;
+    vec3 col = vec3(0.0);
+    for (int s = 0; s < 2; s++) {
+      vec2 uvo = s == 0 ? baseUV : baseUV + offset;
 
-    vec3 target  = vec3(0.0);
-    vec3 forward = normalize(target - ro);
-    vec3 right   = normalize(cross(vec3(0.0, 1.0, 0.0), forward));
-    vec3 up      = cross(forward, right);
-    vec3 rd      = normalize(forward + uv.x * right + uv.y * up);
+      float camYaw   = uMouse.x * 0.5;
+      float camPitch = uMouse.y * 0.26;
+      vec3 ro = vec3(0.0, 0.0, 3.8);
+      ro.xz = rot2(camYaw)   * ro.xz;
+      ro.yz = rot2(-camPitch) * ro.yz;
 
-    float t   = 0.1;
-    bool  hit = false;
-    for (int i = 0; i < MAX_STEPS; i++) {
-      float d = sdScene(ro + rd * t);
-      if (d < EPSILON) { hit = true; break; }
-      if (t > MAX_DIST)  break;
-      t += d * 0.85;
-    }
+      vec3 target  = vec3(0.0);
+      vec3 forward = normalize(target - ro);
+      vec3 right   = normalize(cross(vec3(0.0, 1.0, 0.0), forward));
+      vec3 up      = cross(forward, right);
+      vec3 rd      = normalize(forward + uvo.x * right + uvo.y * up);
 
-    vec3 bgCol = vec3(0.018, 0.012, 0.025);
-    vec2 st    = gl_FragCoord.xy / uResolution;
-    float star = fract(sin(dot(floor(st * 180.0), vec2(127.1, 311.7))) * 43758.5453);
-    bgCol     += step(0.995, star) * 0.06 * vec3(0.6, 0.8, 1.0);
-
-    vec3 col = bgCol;
-
-    if (hit) {
-      vec3 p = ro + rd * t;
-      vec3 n = calcNormal(p);
-      float ao = calcAO(p, n);
-      float f  = smoothstep(0.35, 0.95, uProgress);
-
-      vec3 lDir  = normalize(vec3(1.8, 2.5, -1.2));
-      vec3 lDir2 = normalize(vec3(-1.5, -0.5, 2.0));
-      float diff  = max(dot(n, lDir), 0.0);
-      float diff2 = max(dot(n, lDir2), 0.0) * 0.35;
-      float sha   = softShadow(p + n * 0.01, lDir, 0.1, 6.0, 12.0);
-      float spec  = pow(max(dot(reflect(-lDir, n), -rd), 0.0), 32.0);
-      float rim   = pow(1.0 - max(dot(-rd, n), 0.0), 4.0);
-      float fres  = pow(1.0 - abs(dot(n, -rd)), 3.0);
-
-      vec3 blueHi = vec3(0.00, 0.75, 1.00);
-      vec3 magHi  = vec3(1.00, 0.18, 0.47);
-      vec3 blueLo = vec3(0.00, 0.18, 0.35);
-      vec3 magLo  = vec3(0.30, 0.04, 0.12);
-      float p01   = smoothstep(0.0, 1.0, uProgress);
-      vec3 hiCol  = mix(blueHi, magHi, p01);
-      vec3 loCol  = mix(blueLo, magLo, p01);
-
-      float facing = dot(n, vec3(0.0, 1.0, 0.5)) * 0.5 + 0.5;
-      vec3 surfCol = mix(loCol, hiCol, facing);
-
-      col  = surfCol * (diff * sha * 0.85 + diff2 + 0.12) * ao;
-      // Lift the wordmark so letters stay readable as they form
-      col += surfCol * (0.55 * f);
-      col += hiCol * spec * sha * 0.6;
-      col += hiCol * rim  * (0.5 + p01 * 0.6) * ao;
-      col += hiCol * fres * 0.15;
-    }
-
-    // Distance glow — traces through the merged scene
-    {
-      float minD = MAX_DIST;
-      float gt   = 0.1;
-      for (int i = 0; i < 48; i++) {
-        float d = sdScene(ro + rd * gt);
-        minD = min(minD, d);
-        gt  += max(d * 0.6, 0.04);
-        if (gt > MAX_DIST) break;
+      float t   = 0.1;
+      bool  hit = false;
+      for (int i = 0; i < MAX_STEPS; i++) {
+        float d = sdScene(ro + rd * t);
+        if (d < EPSILON) { hit = true; break; }
+        if (t > MAX_DIST)  break;
+        t += d * 0.85;
       }
-      vec3 glowCol = mix(vec3(0.0, 0.45, 0.8), vec3(0.7, 0.1, 0.35), smoothstep(0.0, 1.0, uProgress));
-      col += glowCol * 0.018 / (minD * minD + 0.01);
-    }
 
-    float fog = 1.0 - exp(-t * 0.055);
-    col = mix(col, bgCol, fog * 0.55);
+      vec3 bgCol = vec3(0.018, 0.012, 0.025);
+      vec2 st    = gl_FragCoord.xy / uResolution;
+      float star = fract(sin(dot(floor(st * 180.0), vec2(127.1, 311.7))) * 43758.5453);
+      bgCol     += step(0.995, star) * 0.06 * vec3(0.6, 0.8, 1.0);
+
+      vec3 sc = bgCol;
+
+      if (hit) {
+        vec3 p = ro + rd * t;
+        vec3 n = calcNormal(p);
+        float ao = calcAO(p, n);
+        float f  = smoothstep(0.35, 0.95, uProgress);
+
+        vec3 lDir  = normalize(vec3(1.8, 2.5, -1.2));
+        vec3 lDir2 = normalize(vec3(-1.5, -0.5, 2.0));
+        float diff  = max(dot(n, lDir), 0.0);
+        float diff2 = max(dot(n, lDir2), 0.0) * 0.35;
+        float sha   = softShadow(p + n * 0.01, lDir, 0.1, 6.0, 12.0);
+        float spec  = pow(max(dot(reflect(-lDir, n), -rd), 0.0), 32.0);
+        float rim   = pow(1.0 - max(dot(-rd, n), 0.0), 4.0);
+        float fres  = pow(1.0 - abs(dot(n, -rd)), 3.0);
+
+        vec3 blueHi = vec3(0.00, 0.75, 1.00);
+        vec3 magHi  = vec3(1.00, 0.18, 0.47);
+        vec3 blueLo = vec3(0.00, 0.18, 0.35);
+        vec3 magLo  = vec3(0.30, 0.04, 0.12);
+        float p01   = smoothstep(0.0, 1.0, uProgress);
+        vec3 hiCol  = mix(blueHi, magHi, p01);
+        vec3 loCol  = mix(blueLo, magLo, p01);
+
+        float facing = dot(n, vec3(0.0, 1.0, 0.5)) * 0.5 + 0.5;
+        vec3 surfCol = mix(loCol, hiCol, facing);
+
+        sc  = surfCol * (diff * sha * 0.85 + diff2 + 0.12) * ao;
+        // Lift the wordmark so letters stay readable as they form
+        sc += surfCol * (0.55 * f);
+        sc += hiCol * spec * sha * 0.6;
+        sc += hiCol * rim  * (0.5 + p01 * 0.6) * ao;
+        sc += hiCol * fres * 0.15;
+      }
+
+      // Distance glow — traces through the merged scene
+      {
+        float minD = MAX_DIST;
+        float gt   = 0.1;
+        for (int i = 0; i < 30; i++) {
+          float d = sdScene(ro + rd * gt);
+          minD = min(minD, d);
+          gt  += max(d * 0.6, 0.04);
+          if (gt > MAX_DIST) break;
+        }
+        vec3 glowCol = mix(vec3(0.0, 0.45, 0.8), vec3(0.7, 0.1, 0.35), smoothstep(0.0, 1.0, uProgress));
+        sc += glowCol * 0.018 / (minD * minD + 0.01);
+      }
+
+      float fog = 1.0 - exp(-t * 0.055);
+      sc = mix(sc, bgCol, fog * 0.55);
+
+      col += s == 0 ? sc : sc;   // sum; averaged below
+    }
+    col *= 0.5;
 
     vec2 vUV = gl_FragCoord.xy / uResolution;
     float vign = 1.0 - dot((vUV - 0.5) * 1.6, (vUV - 0.5) * 1.6);
