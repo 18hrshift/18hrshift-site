@@ -23,7 +23,6 @@ const FILT_MAX   = 14000
 const STEP_MS    = 135                       // ~111 BPM 8th notes
 const SEQUENCE   = [0, 0, 3, 7, 5, 7, 10, 12, 10, 12, 15, 12, 10, 7, 8, 7]
 
-function lerp(a: number, b: number, t: number) { return a + (b - a) * t }
 function logMap(t: number, lo: number, hi: number) {
   return lo * Math.pow(hi / lo, t)
 }
@@ -116,20 +115,13 @@ export function Frequency() {
     // CylinderGeometry reads clearly from any camera angle; boxes show edge-on to most bars
     const barGeo = new THREE.CylinderGeometry(0.035, 0.08, 1, 6)
     barGeo.translate(0, 0.5, 0)
-    const barMat = new THREE.MeshBasicMaterial({ vertexColors: true, color: 0x00BFFF })
+    // Solid electric-blue material — DO NOT use vertexColors/setColorAt here:
+    // InstancedMesh instance colors were rendering black. Single material.color
+    // is guaranteed to show up.
+    const barMat = new THREE.MeshBasicMaterial({ color: 0x33CCFF })
     const bars   = new THREE.InstancedMesh(barGeo, barMat, BAR_COUNT)
     bars.instanceMatrix.setUsage(THREE.DynamicDrawUsage)
     scene.add(bars)
-
-    // Pre-compute bar colors — full saturation, high lightness so they read on dark bg
-    const color = new THREE.Color()
-    for (let i = 0; i < BAR_COUNT; i++) {
-      const t   = 0.5 - 0.5 * Math.cos((i / BAR_COUNT) * Math.PI * 2)
-      const hue = lerp(0.545, 0.94, t) % 1.0
-      color.setHSL(hue, 1.0, 0.72)
-      bars.setColorAt(i, color)
-    }
-    if (bars.instanceColor) bars.instanceColor.needsUpdate = true
 
     // ── Base ring (torus at floor) ─────────────────────────────
     const ringGeo = new THREE.TorusGeometry(OUTER_R, 0.012, 8, 128)

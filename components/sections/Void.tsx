@@ -195,6 +195,7 @@ const fragmentShader = /* glsl */`
 
   // Extruded wordmark as an SDF (letters + slab-thickness in z)
   float sdText(vec3 p) {
+    p.x = -p.x; // texture row-major + bottom-first buffers read mirrored; flip to face the viewer
     vec2 hw  = vec2(0.5 * uTextWw, 0.5 * uTextHw);
     float boxd = length(max(abs(p.xy) - hw, vec2(0.0)));
     vec2 uv   = (p.xy + hw) / vec2(uTextWw, uTextHw);
