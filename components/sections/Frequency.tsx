@@ -125,7 +125,7 @@ export function Frequency() {
     const glowMat  = new THREE.MeshBasicMaterial({
       vertexColors: true,
       transparent: true,
-      opacity: 0.38,
+      opacity: 0.5,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
     })
@@ -138,7 +138,7 @@ export function Frequency() {
     for (let i = 0; i < BAR_COUNT; i++) {
       const t   = 0.5 - 0.5 * Math.cos((i / BAR_COUNT) * Math.PI * 2)
       const hue = lerp(0.545, 0.94, t) % 1.0
-      color.setHSL(hue, 1.0, 0.72)
+      color.setHSL(hue, 1.0, 0.8)
       bars.setColorAt(i, color)
       glowBars.setColorAt(i, color)
     }
@@ -358,9 +358,9 @@ export function Frequency() {
 
         let amp: number
         if (isOn) {
-          amp = (fftBuf[i] / 255) * 3.6 + 0.10
+          amp = (fftBuf[i] / 255) * 4.2 + 0.20
         } else {
-          amp = Math.abs(Math.sin(elapsed * 1.1 + (i / BAR_COUNT) * Math.PI * 6)) * 1.6 + 0.22
+          amp = Math.abs(Math.sin(elapsed * 1.1 + (i / BAR_COUNT) * Math.PI * 6)) * 2.6 + 0.50
         }
 
         dummy.position.set(x, 0, z)
@@ -399,14 +399,14 @@ export function Frequency() {
       waveGeo.attributes.position.needsUpdate  = true
       wave2Geo.attributes.position.needsUpdate = true
 
-      // Camera: side-on angle so bars are clearly visible against dark bg
+      // Camera: tighter, lower orbit so the ring of bars fills the frame
       const autoAngle = elapsed * 0.12
       const mx = mouseRef.current.x
       const my = mouseRef.current.y
-      camera.position.x = Math.sin(autoAngle + mx * 0.5) * 5.5
-      camera.position.z = Math.cos(autoAngle + mx * 0.5) * 5.5
-      camera.position.y = 2.0 + my * 0.8
-      camera.lookAt(0, 0.8, 0)
+      camera.position.x = Math.sin(autoAngle + mx * 0.5) * 4.0
+      camera.position.z = Math.cos(autoAngle + mx * 0.5) * 4.0
+      camera.position.y = 1.6 + my * 0.8
+      camera.lookAt(0, 0.9, 0)
 
       renderer.render(scene, camera)
     }
