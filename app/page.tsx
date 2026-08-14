@@ -7,6 +7,7 @@ import { ParticleMorph } from '@/components/sections/ParticleMorph'
 import { Void } from '@/components/sections/Void'
 import { Frequency } from '@/components/sections/Frequency'
 import { Archive } from '@/components/sections/Archive'
+import { Blog } from '@/components/sections/Blog'
 import { Finale } from '@/components/sections/Finale'
 import { Endpoint } from '@/components/sections/Endpoint'
 
@@ -22,6 +23,7 @@ export default function Home() {
         <Void />
         <Frequency />
         <Archive />
+        <Blog />
         <Finale />
         <Endpoint />
       </main>
