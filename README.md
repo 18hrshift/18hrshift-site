@@ -45,4 +45,4 @@ npm run test:e2e
 
 ## Delivery
 
-The repository is bound to the existing `18hrshift-site` Vercel project. A push to `main` triggers production deployment. Preview deployments are separate; verify the current project/team binding before publishing. A successful local build is not evidence of a deployment.
+The repository is bound to the existing `18hrshift-site` Vercel project. The September 26, 2026 overhaul was committed to `main` and deployed with the Vercel CLI to https://18hrshift.com. Preview deployments are separate. Verify the current project/team binding before publishing, and verify the production alias afterward. Do not assume a Git push deployed successfully: no Git-triggered deployment appeared during this delivery.

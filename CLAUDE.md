@@ -15,4 +15,4 @@ Current implementation updated September 26, 2026. See README.md for setup and v
 - Portfolio descriptions must match real work. Preserve prototype/development labels where applicable. Do not publish private endpoints, account details, credentials, topology or unsupported outcome/scale claims.
 - Public artwork is in `public/projects/`; distinguish product captures from illustrations.
 - `npm run lint`, `bash test.sh`, and `npm run test:e2e` are required for substantive changes. Browser tests need a production build and Chromium.
-- The existing Vercel project is `18hrshift-site`; pushing `main` deploys production. Verify owner and target before delivery.
+- The existing Vercel project is `18hrshift-site`. The September 26 delivery used the Vercel CLI after pushing `main`; do not assume a push creates a deployment. Verify owner, target and the live alias.
