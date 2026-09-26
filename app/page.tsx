@@ -1,30 +1,23 @@
 import { Nav } from '@/components/layout/Nav'
 import { Footer } from '@/components/layout/Footer'
 import { Hero } from '@/components/sections/Hero'
-import { Signal } from '@/components/sections/Signal'
-import { Showcase } from '@/components/sections/Showcase'
-import { ParticleMorph } from '@/components/sections/ParticleMorph'
-import { Void } from '@/components/sections/Void'
-import { Frequency } from '@/components/sections/Frequency'
-import { Archive } from '@/components/sections/Archive'
-import { Blog } from '@/components/sections/Blog'
-import { Finale } from '@/components/sections/Finale'
+import { Studio } from '@/components/sections/Studio'
+import { Portfolio } from '@/components/sections/Portfolio'
+import { Lab } from '@/components/sections/Lab'
+import { Universe } from '@/components/sections/Universe'
 import { Endpoint } from '@/components/sections/Endpoint'
 
 export default function Home() {
   return (
     <>
+      <a className="skip-link" href="#main">Skip to content</a>
       <Nav />
-      <main>
+      <main id="main">
         <Hero />
-        <Signal />
-        <Showcase />
-        <ParticleMorph />
-        <Void />
-        <Frequency />
-        <Archive />
-        <Blog />
-        <Finale />
+        <Studio />
+        <Portfolio />
+        <Lab />
+        <Universe />
         <Endpoint />
       </main>
       <Footer />

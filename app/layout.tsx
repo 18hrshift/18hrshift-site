@@ -1,9 +1,5 @@
 import type { Metadata } from 'next'
 import { Barlow_Condensed, Barlow, JetBrains_Mono } from 'next/font/google'
-import { LenisProvider } from '@/components/providers/LenisProvider'
-import { AnimationProvider } from '@/components/providers/AnimationProvider'
-import { Cursor } from '@/components/ui/Cursor'
-import { SectionDots } from '@/components/ui/SectionDots'
 import './globals.css'
 import { site } from '@/config/site'
 
@@ -29,7 +25,7 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: site.name,
+  title: `${site.name} | ${site.tagline}`,
   description: site.description,
   metadataBase: new URL(site.url),
   openGraph: {
@@ -47,13 +43,7 @@ export default function RootLayout({
       lang="en"
       className={`${barlowCondensed.variable} ${barlow.variable} ${jetbrainsMono.variable}`}
     >
-      <body>
-        <Cursor />
-        <SectionDots />
-        <LenisProvider>
-          <AnimationProvider>{children}</AnimationProvider>
-        </LenisProvider>
-      </body>
+      <body>{children}</body>
     </html>
   )
 }

@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 18HRSHIFT
 
-## Getting Started
+The studio website: a portfolio of real products and systems, an interactive visual lab, and a preview of Games, Media, and Industries.
 
-First, run the development server:
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm ci
+npm run dev -- --port 3318
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Next.js 16 App Router, React 19, TypeScript, Tailwind CSS 4, and Three.js. The page is statically rendered; the visual lab loads in the browser. No application credentials or paid API calls are needed.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Content and design
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `config/site.ts`: identity, navigation, contact and social links.
+- `config/projects.ts`: all seven portfolio stories, features, availability and public destinations. Remove an entry here to remove it from the gallery and its filters.
+- `config/lab.ts`: the three experiments and initial settings.
+- `components/sections/Universe.tsx`: Games, Media and Industries teaser content.
+- `app/globals.css`: shared design tokens, layout and typography.
+- `styles/`: scoped portfolio, lab and universe styles.
 
-## Learn More
+The portfolio covers Embersave, Specter 1-1, Hairraiser, Openwater, Bedrock SQL, OpenWrt and the home lab. Status labels distinguish available sites, prototypes, works in development and privately operated systems. Infrastructure copy describes capabilities without publishing operational endpoints, credentials or network topology.
 
-To learn more about Next.js, take a look at the following resources:
+Embersave and Hairraiser artwork uses their existing brand assets. The Specter image is a capture of actual browser gameplay. Openwater's map and the systems diagrams are illustrations, not product screenshots or live telemetry. Keep claims and availability aligned with each project's maintained source documentation.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Interactions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Project filters and native modal case studies, with Escape, keyboard focus handling and scroll restoration.
+- Liquid chrome, particle field and generative terrain rendered in real time. Energy, disturbance, pause/play and reset controls change the actual scene.
+- Independent hero motion control. Both canvases respect reduced motion and stop drawing offscreen or in hidden tabs.
+- A static illustration and explanatory message when WebGL is unavailable. The rest of the site remains usable.
+- Expandable division teasers and a mobile navigation menu.
 
-## Deploy on Vercel
+## Verification
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run lint
+bash test.sh
+npx playwright install chromium
+npm run test:e2e
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`test.sh` runs TypeScript and a production build. Browser tests launch that production build on port 3320, and cover all seven project dialogs, filters, distinct lab renders, energy/burst/pause/reset, mobile navigation, division panels, 320–1440px overflow, reduced motion, unsupported WebGL and core content without JavaScript. Set `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` to use an existing Chromium binary, or `PLAYWRIGHT_BASE_URL` to test an already running preview. Test artifacts are ignored by Git.
+
+## Delivery
+
+The repository is bound to the existing `18hrshift-site` Vercel project. A push to `main` triggers production deployment. Preview deployments are separate; verify the current project/team binding before publishing. A successful local build is not evidence of a deployment.

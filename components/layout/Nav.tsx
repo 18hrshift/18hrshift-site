@@ -1,58 +1,32 @@
 'use client'
 
-import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
-import { useMagnetic } from '@/hooks/useMagnetic'
 import { site } from '@/config/site'
 
-function MagneticLink({ href, label }: { href: string; label: string }) {
-  const ref = useMagnetic<HTMLAnchorElement>(0.32)
-  return (
-    <Link
-      ref={ref}
-      href={href}
-      className="font-mono text-[10px] text-muted hover:text-blue transition-colors tracking-[0.35em] inline-block"
-      data-magnetic
-    >
-      {label}
-    </Link>
-  )
-}
-
 export function Nav() {
-  const [scrolled, setScrolled] = useState(false)
-  const monogramRef = useMagnetic<HTMLAnchorElement>(0.45)
+  const [open, setOpen] = useState(false)
+  const buttonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+    const dismiss = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && open) {
+        setOpen(false)
+        buttonRef.current?.focus()
+      }
+    }
+    window.addEventListener('keydown', dismiss)
+    return () => window.removeEventListener('keydown', dismiss)
+  }, [open])
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 transition-all duration-700 ${
-        scrolled
-          ? 'bg-surface/80 backdrop-blur-xl border-b border-surface2'
-          : 'bg-transparent'
-      }`}
-    >
-      <Link
-        ref={monogramRef}
-        href="#hero"
-        className="font-mono text-blue text-sm tracking-[0.25em] text-glow-blue inline-block"
-        data-magnetic
-      >
-        {site.monogram}
-      </Link>
-
-      <ul className="flex gap-8">
-        {site.nav.map((item) => (
-          <li key={item.href}>
-            <MagneticLink href={item.href} label={item.label} />
-          </li>
-        ))}
-      </ul>
-    </nav>
+    <header className="site-header">
+      <a className="brand" href="#hero" aria-label="18HRSHIFT home">18HRSHIFT<span aria-hidden="true">✳</span></a>
+      <span className="header-note eyebrow">Independent minds.<br />Shared ambition.</span>
+      <button ref={buttonRef} type="button" className="menu-toggle" aria-expanded={open} aria-controls="site-navigation" onClick={() => setOpen(!open)}>{open ? 'Close −' : 'Menu +'}</button>
+      <nav id="site-navigation" aria-label="Main navigation" className={open ? 'site-nav is-open' : 'site-nav'}>
+        {site.nav.map((item) => <a key={item.href} href={item.href} onClick={() => setOpen(false)}>{item.label}</a>)}
+        <a className="nav-contact" href="#contact" onClick={() => setOpen(false)}>Let’s talk <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
   )
 }
