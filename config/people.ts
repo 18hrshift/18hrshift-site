@@ -3,21 +3,25 @@
 
 export type PersonId = 'john' | 'joe'
 
+// A stat is one answer or a short list of them (Joe has two favorite bands).
+export type PlayerStatValue = string | readonly string[]
+
 export type PlayerStats = {
-  firstGame?: string
-  favoriteGame?: string
-  favoriteBand?: string
-  firstGpu?: string
-  currentInterest?: string
+  firstGame?: PlayerStatValue
+  favoriteGame?: PlayerStatValue
+  favoriteBand?: PlayerStatValue
+  firstGpu?: PlayerStatValue
+  currentInterest?: PlayerStatValue
 }
 
-// Display order and labels for the character sheet. Only stats with a value render.
-export const playerStatLabels: Readonly<Record<keyof PlayerStats, string>> = {
-  firstGame: 'First game',
-  favoriteGame: 'Favorite game',
-  favoriteBand: 'Favorite band',
-  firstGpu: 'First GPU',
-  currentInterest: 'Into right now',
+// Display order and labels for the character sheet, as [one answer, several].
+// Only stats with a value render.
+export const playerStatLabels: Readonly<Record<keyof PlayerStats, readonly [one: string, many: string]>> = {
+  firstGame: ['First game', 'First games'],
+  favoriteGame: ['Favorite game', 'Favorite games'],
+  favoriteBand: ['Favorite band', 'Favorite bands'],
+  firstGpu: ['First GPU', 'First GPUs'],
+  currentInterest: ['Into right now', 'Into right now'],
 }
 
 type Image = { src: string; alt: string; width: number; height: number }
@@ -53,7 +57,7 @@ export const people: Readonly<Record<PersonId, Person>> = {
     line: 'Co-founder. Builds the games, produces the podcast, runs the home lab.',
     avatar: {
       src: '/people/john-avatar.png',
-      alt: 'John’s skull avatar, wearing a gaming headset over a controller.',
+      alt: 'John’s neon skull avatar in a gaming headset with a boom mic, holding a controller.',
       width: 640,
       height: 640,
     },
@@ -112,16 +116,30 @@ export const people: Readonly<Record<PersonId, Person>> = {
     line: 'Co-founder. Second controller, same couch.',
     avatar: {
       src: '/people/joe-avatar.png',
-      alt: 'Joe’s skull avatar, wearing headphones with music notes floating by.',
+      alt: 'Joe’s neon skull avatar in sunglasses and studio headphones, between two speakers.',
       width: 640,
       height: 640,
     },
+    // Joe's own words, from his notes (October 27, 2026).
     bio: [
-      { paragraphs: ['Joe builds for the things he loves: music, games, reading and breakfast sandwiches.'] },
+      {
+        title: 'About',
+        paragraphs: [
+          'Some of my earliest gaming memories are of booting up games on my dad’s DOS computer in the workshop. That curiosity stuck with me, eventually leading to building computers and exploring projects of my own.',
+          'My extensive list of projects keeps me busy these days, with plenty of ideas still waiting their turn.',
+          'I also love music, especially getting out to support local bands. Go Jaguars!',
+        ],
+      },
     ],
     // His GitHub is coming; add it here when it exists.
     links: [],
-    stats: {},
+    stats: {
+      firstGame: ['Doom', 'Hexen', 'Heretic', 'Duke Nukem', 'Redneck Rampage'],
+      favoriteGame: ['The Legend of Zelda: Ocarina of Time', 'The Mass Effect trilogy'],
+      favoriteBand: ['Goose', 'Eggy'],
+      firstGpu: 'EVGA GeForce GTX 670',
+      currentInterest: ['AI projects', 'Cooking', 'Following Trevor Lawrence'],
+    },
     accent: 'magenta',
   },
 }

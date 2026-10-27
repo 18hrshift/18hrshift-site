@@ -19,9 +19,14 @@ export function featuredItems(): FeaturedItem[] {
   )
 }
 
-// The stats that have a value, in display order, with their labels.
+// The stats that have a value, in display order, with their labels. A list
+// reads as one comma-separated answer under the plural label.
 export function filledStats(stats: PlayerStats): { key: keyof PlayerStats; label: string; value: string }[] {
-  return (Object.keys(playerStatLabels) as (keyof PlayerStats)[])
-    .map((key) => ({ key, label: playerStatLabels[key], value: stats[key]?.trim() ?? '' }))
-    .filter((stat) => stat.value.length > 0)
+  return (Object.keys(playerStatLabels) as (keyof PlayerStats)[]).flatMap((key) => {
+    const raw = stats[key]
+    const answers = (typeof raw === 'string' ? [raw] : (raw ?? [])).map((answer) => answer.trim()).filter(Boolean)
+    if (answers.length === 0) return []
+    const [one, many] = playerStatLabels[key]
+    return [{ key, label: answers.length > 1 ? many : one, value: answers.join(', ') }]
+  })
 }
