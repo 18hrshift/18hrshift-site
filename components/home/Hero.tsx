@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { home } from '@/config/site'
-import { Lettermark } from '@/components/brand/Lettermark'
+import { LettermarkSticker } from '@/components/brand/Lettermark'
 import { DisplayTitle, Equalizer } from '@/components/ui/primitives'
 
 export function Hero() {
@@ -20,13 +20,8 @@ export function Hero() {
             <a className="text-link" href={hero.secondary.href}><span className="play-icon" aria-hidden="true">↓</span> {hero.secondary.label}</a>
           </div>
         </div>
-        {/* The lettermark as a sticker: filled silhouette, offset shadow, outline on top. */}
         <div className="hero-mark" aria-hidden="true">
-          <div className="hero-sticker">
-            <span className="hero-sticker-shadow" />
-            <span className="hero-sticker-fill" />
-            <Lettermark className="hero-sticker-outline" />
-          </div>
+          <LettermarkSticker className="hero-sticker" />
         </div>
       </div>
     </section>

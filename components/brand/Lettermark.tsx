@@ -10,10 +10,32 @@ export const lettermarkPaths = [
   'M761.84,474.91c0,22.9-18.56,41.46-41.46,41.46s-41.46-18.56-41.46-41.46,18.56-41.46,41.46-41.46,41.46,18.56,41.46,41.46ZM738.33,474.97c0-9.75-7.9-17.65-17.65-17.65s-17.65,7.9-17.65,17.65,7.9,17.65,17.65,17.65,17.65-7.9,17.65-17.65Z',
 ] as const
 
+// The outer contour alone (the first subpath of the main path, before the letter
+// holes): the lettermark as a solid shape. Derived, so it can't drift from the outline.
+export const lettermarkSilhouette = lettermarkPaths[0].slice(0, lettermarkPaths[0].indexOf('Z') + 1)
+
 export function Lettermark({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox={lettermarkViewBox} fill="currentColor" aria-hidden="true" focusable="false">
       {lettermarkPaths.map((d) => <path key={d} d={d} />)}
+    </svg>
+  )
+}
+
+// The lettermark as a sticker: offset shadow, filled silhouette, outline on top. All
+// layers are vectors from the same paths, so their edges line up at any size. The last
+// layer strokes the outer contour in the outline's colour, a hair past the fill, so the
+// fill can't show through the anti-aliased edge as a thin line. Colours and the shadow
+// offset come from CSS: `.sticker-shadow`, `.sticker-fill`, `.sticker-outline`.
+export function LettermarkSticker({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox={lettermarkViewBox} aria-hidden="true" focusable="false">
+      <path className="sticker-shadow" d={lettermarkSilhouette} />
+      <path className="sticker-fill" d={lettermarkSilhouette} />
+      <g className="sticker-outline">
+        {lettermarkPaths.map((d) => <path key={d} d={d} />)}
+        <path className="sticker-edge" d={lettermarkSilhouette} />
+      </g>
     </svg>
   )
 }

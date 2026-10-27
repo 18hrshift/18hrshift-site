@@ -39,7 +39,7 @@ Status labels must stay honest: prototypes stay prototypes, and projects without
 ## Code layout
 
 - `app/`: routes, metadata, share images, sitemap, robots, 404. `app/globals.css` holds the color tokens and shared layout.
-- `components/home/`: the home sections. `components/people/`: player card, stats and the profile template. `components/games/`: cartridge, mini cartridge and the empty slot. `components/projects/`: artwork, details, dialog, inline feature and the systems list. `components/lab/`: the lab workbench and Three.js scene. `components/ui/primitives.tsx`: shared tags, headings, links, the equalizer motif and the JSON-LD script. `components/brand/Lettermark.tsx`: the 18hr lettermark.
+- `components/home/`: the home sections. `components/people/`: player card, stats and the profile template. `components/games/`: cartridge, mini cartridge and the empty slot. `components/projects/`: artwork, details, dialog, inline feature and the systems list. `components/lab/`: the lab workbench and Three.js scene. `components/ui/primitives.tsx`: shared tags, headings, links, the equalizer motif and the JSON-LD script. `components/brand/Lettermark.tsx`: the 18hr lettermark, its silhouette (the outline's outer contour, derived in code) and the hero sticker drawn from both.
 - `lib/`: metadata, structured data, share images and small config readers.
 - `styles/`: `home.css`, `people.css`, `games.css`, `projects.css` and `lab.css`.
 
@@ -49,7 +49,6 @@ Status labels must stay honest: prototypes stay prototypes, and projects without
 - `public/projects/`: Embersave and Hairraiser brand art; `power-hour-club.webp` and `nybec.webp` are captures of those live sites, labelled "Site capture". The podcast, Marginalia, the Ouran fan translation and the systems art are illustrations drawn in code.
 - `public/people/`: avatars and John's photo. The avatars are first-round drafts from `assets/avatars/drafts/`, prepared with `assets/avatars/prepare_web.py` (see `assets/avatars/README.md`).
 - `public/lab/liquid-chrome.webp`: a still of the liquid chrome scene captured from `/lab`, used by the home teaser.
-- `public/brand/lettermark-silhouette.png`: the filled outline of `public/assets/lettermark-black.png`, used as a CSS mask for the hero sticker.
 
 To refresh captures, run `npm run capture:sites` (or name ids: `npm run capture:sites -- sorter nybec`). Each game has a short click path in the script that gets past its menus into play. Look at the results before committing; live sites change.
 
