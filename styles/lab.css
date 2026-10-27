@@ -1,5 +1,7 @@
 .lab-section {
-  padding: clamp(5rem, 9vw, 9rem) clamp(1.25rem, 4.3vw, 5rem);
+  max-width: 1560px;
+  margin-inline: auto;
+  padding: clamp(3.5rem, 7vw, 7rem) clamp(16px, 4.5vw, 76px) 0;
   scroll-margin-top: 5rem;
 }
 
@@ -10,11 +12,11 @@
   font-weight: 400;
   letter-spacing: 0.065em;
 }
-.lab-eyebrow { display: flex; align-items: center; gap: 2rem; color: var(--clr-muted); margin-bottom: 1.5rem; }
+.lab-eyebrow { display: flex; align-items: center; gap: 2rem; color: var(--clr-muted); margin-bottom: 1.5rem; text-transform: uppercase; }
 .lab-experiment-tag { color: var(--clr-accent); }
-.lab-heading h2 { font-family: var(--font-barlow-condensed), sans-serif; font-size: clamp(4.5rem, 8.5vw, 9rem); font-weight: 800; text-transform: uppercase; letter-spacing: -0.035em; line-height: 0.86; }
-.lab-heading h2 > span { color: var(--clr-accent); }
-.lab-heading-copy { max-width: 21rem; padding-bottom: 0.4rem; font-size: clamp(1.05rem, 1.3vw, 1.3rem); line-height: 1.55; }
+.lab-heading h1 { font-family: var(--font-barlow-condensed), sans-serif; font-size: clamp(4.5rem, 8.5vw, 9rem); font-weight: 800; text-transform: uppercase; letter-spacing: -0.035em; line-height: 0.86; }
+.lab-heading h1 .title-line--accent { color: var(--clr-accent); }
+.lab-heading-copy { max-width: 26rem; color: var(--clr-muted); padding-bottom: 0.4rem; font-size: clamp(1.05rem, 1.3vw, 1.3rem); line-height: 1.55; }
 .lab-heading-copy > span { color: var(--clr-muted); }
 .lab-workbench { display: grid; grid-template-columns: minmax(0, 1fr) 320px; border: 1px solid var(--clr-surface2); min-height: 620px; }
 .lab-stage { position: relative; min-height: 620px; overflow: hidden; isolation: isolate; background: radial-gradient(ellipse at 50% 45%, color-mix(in srgb, var(--clr-accent) 3.5%, transparent), transparent 64%), var(--clr-bg); }
@@ -88,10 +90,10 @@
 }
 
 @media (max-width: 760px) {
-  .lab-heading { align-items: flex-start; gap: 1.6rem; }
-  .lab-heading h2 { font-size: clamp(4rem, 13vw, 6rem); }
+  .lab-heading { flex-direction: column; align-items: flex-start; gap: 1.6rem; margin-bottom: 2rem; }
+  .lab-heading h1 { font-size: clamp(3.4rem, 15vw, 6rem); }
   .lab-eyebrow { font-size: 0.52rem; margin-bottom: 1.25rem; }
-  .lab-heading-copy { font-size: 0.92rem; padding-top: 2.25rem; max-width: 11rem; }
+  .lab-heading-copy { font-size: 1rem; padding: 0; max-width: 34rem; }
   .lab-workbench { grid-template-columns: 1fr; }
   .lab-stage { min-height: 470px; }
   .lab-stage-top { inset: 1.2rem 1.2rem auto; font-size: 0.54rem; }

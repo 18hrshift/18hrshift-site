@@ -1,69 +1,39 @@
-export type ProjectCategory = 'Products' | 'Games' | 'Systems'
+// Everything that isn't a game: platforms, the show, ideas in progress and the
+// systems we run. Systems (`kind: 'System'`) appear on both /lab and /john.
+// Descriptions must match the real work; keep status labels honest. A project
+// with a `capture` shows a real screenshot of its live site, taken by
+// scripts/capture-sites.mjs; the rest use brand art or an illustration.
+
+import type { PersonId } from './people'
+
+export type ProjectKind = 'Platform' | 'Web app' | 'Podcast' | 'Prototype' | 'Fan translation' | 'Idea' | 'System'
 
 export type Project = {
   id: string
-  number: string
   name: string
+  kind: ProjectKind
+  owner: PersonId
   discipline: string
-  categories: readonly ProjectCategory[]
   summary: string
-  headline: string
+  headline?: string
   story: string
-  features: readonly string[]
-  status: string
-  statusNote: string
+  features?: readonly string[]
+  status?: string
+  statusNote?: string
   url?: string
   linkLabel?: string
-  layout?: 'system'
+  capture?: { src: string; alt: string; width: number; height: number }
 }
+
+const siteCapture = (id: string, alt: string) => ({ src: `/projects/${id}.webp`, alt: `Site capture: ${alt}`, width: 1440, height: 900 })
 
 export const projects: readonly Project[] = [
   {
-    id: 'embersave',
-    number: '01',
-    name: 'Embersave',
-    discipline: 'Gaming tools / Desktop',
-    categories: ['Products', 'Games'],
-    summary: 'One world. Whoever gets online first.',
-    headline: 'Keep the world alive.',
-    story: 'A survival world should belong to the whole friend group. Embersave is an open-source launcher that passes one shared save between players. Take a turn hosting, play together, then hand the world on when you leave.',
-    features: [
-      'Palworld host handoffs between two machines',
-      'One host at a time, with background save snapshots',
-      'Save recovery and a desktop launcher',
-      'Save files kept in the players’ own Google Drive',
-    ],
-    status: 'In development',
-    statusNote: 'The Palworld handoff has been tested end to end. There is no public installer yet; broader game support is still ahead.',
-    url: 'https://embersave.18hrshift.com',
-    linkLabel: 'Meet Embersave',
-  },
-  {
-    id: 'specter',
-    number: '02',
-    name: 'Specter 1-1',
-    discipline: 'Games / Real-time 3D',
-    categories: ['Games'],
-    summary: 'A world below. Every decision carries.',
-    headline: 'Bring the squad home.',
-    story: 'A tactical gunship experiment set in an alternate Cold War. Orbit above a stylized world, protect the team on the ground, and carry a persistent squad through operations where losses stay with you.',
-    features: [
-      'Playable gunship combat with multiple weapons and sensors',
-      'Five theaters with distinct terrain and missions',
-      'A campaign, field upgrades and a persistent squad roster',
-      'A real-time 3D browser prototype',
-    ],
-    status: 'Playable prototype',
-    statusNote: 'Explore the browser prototype on a desktop with a mouse and keyboard. The game is in development; this is an experimental build.',
-    url: 'https://c130.18hrshift.com',
-    linkLabel: 'Play the prototype',
-  },
-  {
     id: 'hairraiser',
-    number: '03',
     name: 'Hairraiser',
+    kind: 'Platform',
+    owner: 'john',
     discipline: 'Platforms / Brand',
-    categories: ['Products'],
     summary: 'An idea with a human side.',
     headline: 'Fund your comeback.',
     story: 'Personal crowdfunding for hair-restoration journeys. Hairraiser brings campaign stories, contributions and progress updates together in a warm, approachable product built around the people using it.',
@@ -79,30 +49,115 @@ export const projects: readonly Project[] = [
     linkLabel: 'Visit Hairraiser',
   },
   {
-    id: 'openwater',
-    number: '04',
-    name: 'Openwater',
-    discipline: 'Mobile / Maps',
-    categories: ['Products'],
-    summary: 'Less screen time. More water time.',
-    headline: 'Find your next good day.',
-    story: 'A local-first fishing companion, starting in Pennsylvania. Find water, keep a personal catch log and share waypoints with friends, with your own fishing history kept close to you.',
+    id: 'aah',
+    name: 'Andrew Asks How',
+    kind: 'Podcast',
+    owner: 'john',
+    discipline: 'Podcast / Production',
+    summary: 'Long-form interviews. John has produced all 100 episodes.',
+    headline: 'Pull up a chair.',
+    story: 'A long-form interview show. Andrew Forte sits down with founders and influential people in startups, crypto and internet culture for a relaxed conversation. John co-founded it with Andrew and has produced all 100 episodes.',
+    url: 'https://andrewaskshow.com',
+    linkLabel: 'Listen at andrewaskshow.com',
+  },
+  {
+    id: 'embersave',
+    name: 'Embersave',
+    kind: 'Idea',
+    owner: 'john',
+    discipline: 'Gaming tools / Desktop',
+    summary: 'One world. Whoever gets online first.',
+    headline: 'Keep the world alive.',
+    story: 'A survival world should belong to the whole friend group. Embersave is an open-source launcher that passes one shared save between players. Take a turn hosting, play together, then hand the world on when you leave.',
     features: [
-      'A Flutter mobile app with map and water-detail views',
-      'Catch logging, photos, waypoints and a personal logbook',
-      'Water conditions and stocking-data integrations',
-      'On-device storage with optional friend sharing',
+      'Palworld host handoffs between two machines',
+      'One host at a time, with background save snapshots',
+      'Save recovery and a desktop launcher',
+      'Save files kept in the players’ own Google Drive',
     ],
     status: 'In development',
-    statusNote: 'The app and data services are being developed. There is no public app-store release to download yet. The map artwork shown here is an illustration.',
+    statusNote: 'The Palworld handoff has been tested end to end. There is no public installer yet; broader game support is still ahead.',
+    url: 'https://embersave.18hrshift.com',
+    linkLabel: 'Meet Embersave',
+  },
+  {
+    id: 'power-hour-club',
+    name: 'Power Hour Club',
+    kind: 'Web app',
+    owner: 'joe',
+    discipline: 'Web app / Music & video',
+    summary: 'Make and play power hour playlists from YouTube clips.',
+    story: 'A website for making and playing power hour playlists: short video clips that play one after another, traditionally changing every minute for an hour. Pick clips from YouTube, build your own playlists or explore ones the community shared, with optional drinking-game features for gatherings.',
+    features: [
+      'Create playlists from YouTube clips',
+      'Choose where clips begin and play them in sequence',
+      'Browse community playlists',
+      'Optional drinking-game features',
+    ],
+    status: 'Live',
+    url: 'https://powerhour.club',
+    linkLabel: 'Visit Power Hour Club',
+    capture: siteCapture('power-hour-club', 'the Power Hour Club home page, with playlist tools and community picks.'),
+  },
+  {
+    id: 'nybec',
+    name: 'NYBEC Tracker',
+    kind: 'Web app',
+    owner: 'joe',
+    discipline: 'Web app / Food & maps',
+    summary: 'Find and compare bacon, egg and cheese sandwiches across NY, NJ and CT.',
+    story: 'Find and compare bacon, egg and cheese sandwiches at delis and bodegas across New York, New Jersey and Connecticut, with prices, locations, hours, photos and reviews.',
+    features: [
+      'Find nearby delis and bodegas on a map',
+      'Compare BEC prices',
+      'Location details, hours, photos and reviews',
+      'Coverage across New York, New Jersey and Connecticut',
+    ],
+    status: 'Live',
+    url: 'https://nybec.com',
+    linkLabel: 'Visit NYBEC Tracker',
+    capture: siteCapture('nybec', 'the NYBEC Tracker home page, with a price search and a list of the cheapest sandwiches.'),
+  },
+  {
+    id: 'marginalia',
+    name: 'Marginalia',
+    kind: 'Prototype',
+    owner: 'joe',
+    discipline: 'Book illustrator',
+    summary: 'A reading app that illustrates the story as you go.',
+    story: 'An illustrated reading app that creates pictures for moments in a story as you read or listen. Choose an art style, tune the reading experience, and follow along with narration.',
+    features: [
+      'Illustrations generated for scenes while reading or listening',
+      'Art style, text size, theme and illustration frequency controls',
+      'Narration with voice, speed and playback controls',
+      'A bookshelf of classic books, imported texts and saved places',
+      'Review pictures and keep character appearances consistent',
+      'Export an illustrated edition for offline reading',
+    ],
+    status: 'Local prototype',
+  },
+  {
+    id: 'ouran',
+    name: 'Ouran High School Host Club',
+    kind: 'Fan translation',
+    owner: 'joe',
+    discipline: 'English fan translation / Nintendo DS',
+    summary: 'A community fan translation of the Nintendo DS game into English.',
+    story: 'A community fan translation that brings the game’s dialogue, story scenes and parts of its menus into English, so more fans can experience its characters and branching story. The work covers translating and reviewing the text, fitting it to the game’s screens, and playtesting how it reads.',
+    features: [
+      'English dialogue and story scenes',
+      'Translated menu elements and artwork',
+      'A branching story with multiple character paths and endings',
+      'Community review materials for feedback and corrections',
+    ],
+    status: 'Ongoing fan project',
   },
   {
     id: 'bedrock',
-    number: '05',
     name: 'Bedrock SQL',
+    kind: 'System',
+    owner: 'john',
     discipline: 'Infrastructure / PostgreSQL',
-    categories: ['Systems'],
-    layout: 'system',
     summary: 'The foundation underneath the products.',
     headline: 'Build on something solid.',
     story: 'Our self-hosted PostgreSQL platform gives separate projects a shared operational foundation. The work goes beyond running a database: it includes tenant boundaries, encrypted connections, recoverable backups and checks that exercise the database itself.',
@@ -117,11 +172,10 @@ export const projects: readonly Project[] = [
   },
   {
     id: 'openwrt',
-    number: '06',
     name: 'OpenWrt network',
+    kind: 'System',
+    owner: 'john',
     discipline: 'Networking / Open source',
-    categories: ['Systems'],
-    layout: 'system',
     summary: 'Own the network. Understand every layer.',
     headline: 'A network with a plan.',
     story: 'An open-source network build, from router firmware to DNS filtering and a considered cutover. OpenWrt and Pi-hole form the base, with guest separation, private remote access and monitoring designed for everyday use.',
@@ -136,11 +190,10 @@ export const projects: readonly Project[] = [
   },
   {
     id: 'homelab',
-    number: '07',
     name: 'The home lab',
+    kind: 'System',
+    owner: 'john',
     discipline: 'Virtualization / Operations',
-    categories: ['Systems'],
-    layout: 'system',
     summary: 'Where the experiments become infrastructure.',
     headline: 'From the machine up.',
     story: 'A hands-on environment for building and running our own services. Virtual machines, backup routines, power monitoring and documented recovery turn a collection of hardware into a place where ideas can keep running.',
@@ -154,3 +207,11 @@ export const projects: readonly Project[] = [
     statusNote: 'Our working environment for self-hosted services, development, and infrastructure experiments.',
   },
 ]
+
+export const projectById = (id: string) => {
+  const project = projects.find((item) => item.id === id)
+  if (!project) throw new Error(`Unknown project id "${id}" in config.`)
+  return project
+}
+
+export const systems = projects.filter((project) => project.kind === 'System')

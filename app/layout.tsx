@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import { Barlow_Condensed, Barlow, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
-import { site } from '@/config/site'
+import { home, site } from '@/config/site'
+import { Nav } from '@/components/layout/Nav'
+import { Footer } from '@/components/layout/Footer'
 
 const barlowCondensed = Barlow_Condensed({
   subsets: ['latin'],
@@ -25,14 +27,10 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: `${site.name} | ${site.tagline}`,
-  description: site.description,
   metadataBase: new URL(site.url),
-  openGraph: {
-    title: site.name,
-    description: site.description,
-    type: 'website',
-  },
+  title: { default: home.metaTitle, template: `%s | ${site.name}` },
+  description: home.description,
+  applicationName: site.name,
 }
 
 export default function RootLayout({
@@ -43,7 +41,12 @@ export default function RootLayout({
       lang="en"
       className={`${barlowCondensed.variable} ${barlow.variable} ${jetbrainsMono.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <a className="skip-link" href="#main">{site.skipLink}</a>
+        <Nav />
+        <main id="main">{children}</main>
+        <Footer />
+      </body>
     </html>
   )
 }

@@ -8,10 +8,10 @@ import {
   terrainVertex, terrainFragment,
 } from './shaders'
 import type { LabSceneProps, SceneStatus } from './types'
+import { labCopy, labModes } from '@/config/lab'
 import '@/styles/lab.css'
 
 export default function LabScene({
-  variant = 'lab',
   mode = 'flux',
   energy = 0.55,
   paused = false,
@@ -90,7 +90,7 @@ export default function LabScene({
     flux.add(orbit)
     root.add(flux)
 
-    const count = variant === 'hero' ? 8000 : 16000
+    const count = 16000
     const positions = new Float32Array(count * 3)
     const seeds = new Float32Array(count)
     const goldenAngle = Math.PI * (3 - Math.sqrt(5))
@@ -232,7 +232,7 @@ export default function LabScene({
       if (!width || !height) return
       renderer.setSize(width, height, false)
       camera.aspect = width / height
-      camera.position.z = camera.aspect < 1 ? 9.2 : variant === 'hero' ? 7.3 : 7.5
+      camera.position.z = camera.aspect < 1 ? 9.2 : 7.5
       camera.updateProjectionMatrix()
       requestFrame()
     }
@@ -290,16 +290,16 @@ export default function LabScene({
       // Keep the canvas context reusable for React Strict Mode's effect replay.
       // Geometry, materials, and renderer caches have all been disposed above.
     }
-  }, [variant])
+  }, [])
 
   return (
-    <div className={`lab-scene lab-scene--${variant}`} data-scene-status={status} data-scene-mode={mode}>
+    <div className="lab-scene" data-scene-status={status} data-scene-mode={mode}>
       <canvas
         ref={canvasRef}
         className="lab-scene-canvas"
         role="img"
         aria-hidden={status !== 'ready'}
-        aria-label={`${mode === 'flux' ? 'Liquid chrome sculpture' : mode === 'swarm' ? 'Interactive particle sphere' : 'Procedural wireframe landscape'}, rendered in real time`}
+        aria-label={labModes.find((item) => item.id === mode)?.canvasLabel}
         style={{ opacity: status === 'ready' ? 1 : 0 }}
       />
       {status !== 'ready' && (
@@ -312,7 +312,7 @@ export default function LabScene({
         </div>
       )}
       {status === 'unavailable' && (
-        <span className="lab-scene-unavailable" role="status">Static preview · interactive 3D is unavailable in this browser.</span>
+        <span className="lab-scene-unavailable" role="status">{labCopy.unavailable}</span>
       )}
     </div>
   )
