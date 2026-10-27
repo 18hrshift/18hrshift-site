@@ -67,6 +67,10 @@ const paths = {
     if (await later.isVisible()) await later.click()
     await page.waitForTimeout(1000)
   },
+  spotslop: async (page) => {
+    await button(page, /Play today/).click()
+    await page.waitForTimeout(3000)
+  },
   sorter: async (page) => {
     await page.getByRole('link', { name: /Start ranking/ }).or(page.getByRole('button', { name: /Start ranking/ })).first().click()
     await page.waitForTimeout(3000)

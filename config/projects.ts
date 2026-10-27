@@ -6,7 +6,7 @@
 
 import type { PersonId } from './people'
 
-export type ProjectKind = 'Platform' | 'Web app' | 'Podcast' | 'Prototype' | 'Fan translation' | 'Idea' | 'System'
+export type ProjectKind = 'Platform' | 'Web app' | 'App' | 'Podcast' | 'Prototype' | 'Fan translation' | 'Idea' | 'System'
 
 export type Project = {
   id: string
@@ -117,6 +117,26 @@ export const projects: readonly Project[] = [
     url: 'https://nybec.com',
     linkLabel: 'Visit NYBEC Tracker',
     capture: siteCapture('nybec', 'the NYBEC Tracker home page, with a price search and a list of the cheapest sandwiches.'),
+  },
+  {
+    id: 'ourtv',
+    name: 'OurTV',
+    kind: 'App',
+    owner: 'joe',
+    discipline: 'Desktop & Android app / TV',
+    summary: 'Turn the streaming services you already pay for into TV channels.',
+    story: 'Make your own TV channels out of the streaming services you already pay for. Put shows and movies in the order you want, from any of your services, and the channel airs around the clock with a real program guide. Press Watch to open whatever is on now, or share a channel so a friend can run their own copy.',
+    features: [
+      'Channels built only from the services you subscribe to',
+      'A live program guide: on now, up next, after that',
+      'Press Watch to jump into the program already in progress',
+      'Share channels with friends or post them for anyone to copy',
+      'For Windows and Android, with streaming logins kept on your device',
+    ],
+    status: 'Invite only',
+    url: 'https://ourtvnow.com',
+    linkLabel: 'Visit OurTV',
+    capture: siteCapture('ourtv', 'the OurTV home page, “Make your own TV channels”, with an example program guide below.'),
   },
   {
     id: 'marginalia',

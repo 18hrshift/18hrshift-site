@@ -37,7 +37,7 @@ export const games: readonly Game[] = [
   },
   {
     id: 'ruff-n-tumble',
-    name: 'Ruff ’n Tumble',
+    name: 'Pup & Tumble',
     genre: 'Herding',
     line: 'A tactical herding journey. Lead three dogs, guide the herd across risky country and bring them home.',
     status: 'Release candidate',
@@ -93,6 +93,18 @@ export const games: readonly Game[] = [
     url: 'https://gasguesser.18hrshift.com',
     accent: 'orange',
     capture: capture('gasguesser', 'a real gas station photo with the price hidden and the guess slider below.'),
+  },
+  {
+    id: 'spotslop',
+    name: 'SpotSlop',
+    genre: 'Real or AI?',
+    line: 'Five photos a day: real or AI? After each guess, see the real photo next to its AI twin, then challenge a friend to the same five.',
+    status: 'Live',
+    owner: 'joe',
+    url: 'https://spotslop.art',
+    accent: 'blue',
+    bestOn: 'Phone or desktop',
+    capture: capture('spotslop', 'photo 1 of the daily five, a table with wooden spoons, above the Real photo and AI-generated buttons.'),
   },
   {
     id: 'sorter',
