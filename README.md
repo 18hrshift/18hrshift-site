@@ -47,7 +47,7 @@ Status labels must stay honest: prototypes stay prototypes, and projects without
 
 - `public/games/`: gameplay captures of each live game (1440x900 WebP), taken with Playwright by `npm run capture:sites`. Alt text starts "Gameplay capture:" and each card labels its image the same way.
 - `public/projects/`: Embersave and Hairraiser brand art; `power-hour-club.webp` and `nybec.webp` are captures of those live sites, labelled "Site capture". The podcast, Marginalia, the Ouran fan translation and the systems art are illustrations drawn in code.
-- `public/people/`: avatars and John's photo. The avatars are first-round drafts from `assets/avatars/drafts/`, prepared with `assets/avatars/prepare_web.py` (see `assets/avatars/README.md`).
+- `public/people/`: avatars and John's photo. The avatars are the round 7 neon pair (`assets/avatars/final/pair-booth-yy.png`), cut into transparent 640px squares by `assets/avatars/crop_avatars.py`. `assets/avatars/README.md` has the generators, the edit script for tweaks and the 1000px PFPs.
 - `public/lab/liquid-chrome.webp`: a still of the liquid chrome scene captured from `/lab`, used by the home teaser.
 
 To refresh captures, run `npm run capture:sites` (or name ids: `npm run capture:sites -- sorter nybec`). Each game has a short click path in the script that gets past its menus into play. Look at the results before committing; live sites change.
