@@ -9,17 +9,21 @@ Personalized versions of the 18hr skull for the person pages. Source art only; n
 - `gen_tune.py`: round 7 (October 27, 2026). Edits the round 3 final pair again after John's and Joe's notes: Joe drops the headphones and speakers for a DJ booth or a handheld DJ deck, takes John's silhouette (head piece, skull, prop below) with mirrored background motifs, and the `-yy` variants add one tiny accent of each other's color (a magenta light on John's controller, a green LED on Joe's mixer). The prompts live in its `VARIANTS` table.
 - `final/pair-booth-yy.png`: **the current pick** (October 27, 2026): Joe at the DJ booth, with the yin-yang accents. Kept at full color because it's the source for any future edit. The other three candidates are in `round7/` (shrunk to 256 colors).
 - `pfp/john-pfp.png`, `pfp/joe-pfp.png`: 1000px square profile pictures from the pick, on solid black for social accounts. `make_pfps.py` sizes them to the circle around each drawing, so a round crop keeps every motif, and uses one scale for both.
-- `edit_pair.py`: for the next tweak. It sends the pick back with one plain-language change and keeps everything else, the way rounds 3 to 7 were fixed. Recrop with `crop_avatars.py` (site) and `make_pfps.py` (PFPs) after.
+- `pfp/john-pfp-solo.png`: John alone, just the skull and headset with no controller, hands or motifs (October 27, 2026, John's ask). Its source is `final/john-solo.png`, an `edit_image.py` edit of `pfp/john-pfp.png`, cut with `make_pfps.py --solo` to fill its own circle. `pfp/john-pfp-solo-motifs.png` is the alternate that keeps the stars and D-pad.
+- `edit_image.py`: for the next tweak. It sends a pick back with one plain-language change and keeps everything else, the way rounds 3 to 7 were fixed. It works on a pair or a square PFP and keeps the input's shape. Recut with `make_pfps.py` (plus `crop_avatars.py` for a pair) after.
 - `gen_skulls.py`: the round 1 generator. It sends the 18hr lettermark as a reference image to OpenRouter (`openai/gpt-5.4-image-2`) so the dome, ring eyes and three-leg jaw stay consistent, then adds one personal element per variant. Prompts live in its `VARIANTS` table.
 
 ```bash
 export OPENROUTER_API_KEY=...   # key location: central-ops/ACCOUNTS.md
 # Tweak the current pick (two takes), then cut the one you like:
-python3 assets/avatars/edit_pair.py assets/avatars/final/pair-booth-yy.png /tmp/edit "Make Joe's booth a little smaller." 2
-python3 assets/avatars/crop_avatars.py /tmp/edit/pair-edit-1.png public/people   # site avatars, 640px transparent
-python3 assets/avatars/make_pfps.py /tmp/edit/pair-edit-1.png assets/avatars/pfp  # PFPs, 1000px on black
+python3 assets/avatars/edit_image.py assets/avatars/final/pair-booth-yy.png /tmp/edit "Make Joe's booth a little smaller." 2
+python3 assets/avatars/crop_avatars.py /tmp/edit/edit-1.png public/people   # site avatars, 640px transparent
+python3 assets/avatars/make_pfps.py /tmp/edit/edit-1.png assets/avatars/pfp  # PFPs, 1000px on black
+# A single-character PFP, like John's solo skull:
+python3 assets/avatars/edit_image.py assets/avatars/pfp/john-pfp.png /tmp/solo "Remove John's game controller and both of his hands..." 2 bare
+python3 assets/avatars/make_pfps.py --solo /tmp/solo/bare-1.png assets/avatars/pfp/john-pfp-solo.png
 # How the current pick was made:
 python3 assets/avatars/gen_tune.py assets/avatars/final/pair-neon-shadeson.png /tmp/round7 booth-yy
 ```
 
-Measured cost: about $0.24 per round 1 image, $0.19 per round 2 pair and $0.17 per edit (final and round 7). The generators write full-size PNGs; shrink candidates before committing, but keep the current pick at full color.
+Measured cost: about $0.24 per round 1 image, $0.19 per round 2 pair and $0.17 per pair edit (final and round 7) and $0.24 per square edit (solo). The generators write full-size PNGs; shrink candidates before committing, but keep the current pick at full color.
