@@ -44,3 +44,6 @@ next-env.d.ts
 # browser verification
 /playwright-report/
 /test-results/
+
+# agent worktrees
+.claude/worktrees/
