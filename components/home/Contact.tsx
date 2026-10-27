@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { home, site } from '@/config/site'
 import { DisplayTitle, ExternalLink } from '@/components/ui/primitives'
 
@@ -15,6 +16,7 @@ export function Contact() {
         <div className="contact-links">
           <a href={`mailto:${site.email}`}>{site.email} <span aria-hidden="true">↗</span></a>
           <ExternalLink href={site.github}>GitHub <span aria-hidden="true">↗</span></ExternalLink>
+          <Link href={copy.pileLink.href}>{copy.pileLink.label} <span aria-hidden="true">→</span></Link>
         </div>
       </div>
     </section>

@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test'
 import { gamesBy } from '@/config/games'
+import { ideasBy } from '@/config/ideas'
 import { people } from '@/config/people'
 import { projectById, systems } from '@/config/projects'
 import { profilePages, site } from '@/config/site'
-import { expectProfileHeader, jsonLdNodes } from './helpers'
+import { expectIdeaPile, expectProfileHeader, jsonLdNodes } from './helpers'
 
 const john = people.john
 const sections = profilePages.john.sections
@@ -18,7 +19,7 @@ test('the profile shows his avatar, photo, bio sections, hot take and links', as
 })
 
 test('his work sections come from the shared config', async ({ page }) => {
-  for (const id of ['show', 'platform', 'ideas']) {
+  for (const id of ['show', 'platform']) {
     const config = section(id)
     if (config.kind !== 'projects') throw new Error(`${id} should list projects`)
     const region = page.getByRole('region', { name: config.title })
@@ -30,7 +31,17 @@ test('his work sections come from the shared config', async ({ page }) => {
       await expect(region.getByRole('link', { name: new RegExp(project.linkLabel!) })).toHaveAttribute('href', project.url!)
     }
   }
-  await expect(page.getByRole('region', { name: section('ideas').title }).getByText('In development', { exact: true })).toBeVisible()
+  const ideas = section('ideas')
+  if (ideas.kind !== 'ideas') throw new Error('ideas should be the idea pile')
+  const ideasRegion = page.getByRole('region', { name: ideas.title })
+  for (const projectId of ideas.lead ?? []) {
+    const project = projectById(projectId)
+    const article = ideasRegion.getByRole('article', { name: project.name })
+    await expect(article.getByText(project.story)).toBeVisible()
+    await expect(article.getByText(project.status!, { exact: true })).toBeVisible()
+    await expect(article.getByRole('link', { name: new RegExp(project.linkLabel!) })).toHaveAttribute('href', project.url!)
+  }
+  await expectIdeaPile(ideasRegion, ideasBy(john.id), john.firstName)
 
   const gamesRegion = page.getByRole('region', { name: section('games').title })
   const theirGames = gamesBy(john.id)

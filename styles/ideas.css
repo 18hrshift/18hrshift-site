@@ -1,0 +1,37 @@
+/* The idea pile: index cards with a stage stamp, on /ideas and the profile pages. */
+
+/* Stage colors run from cold (a napkin sketch) to warm (it works), with shelved greyed out. */
+[data-stage="Napkin"] { --stage: var(--clr-muted); }
+[data-stage="Prototype"] { --stage: var(--clr-blue); }
+[data-stage="Playable"] { --stage: var(--clr-magenta); }
+[data-stage="Working"] { --stage: var(--clr-accent); }
+[data-stage="Shelved"] { --stage: var(--clr-orange); }
+
+.idea-stage { display: inline-block; padding: 3px 7px; border: 1px solid var(--stage); border-radius: 2px; color: var(--stage); }
+
+.idea-legend { display: flex; flex-wrap: wrap; gap: 12px 26px; margin-top: 34px; max-width: 900px; }
+.idea-legend div { display: flex; align-items: baseline; gap: 10px; }
+.idea-legend dd { color: var(--clr-muted); font-size: 14px; }
+
+.idea-section { padding-block: clamp(40px, 6vw, 80px) 0; }
+.idea-section .profile-section-title a { transition: color .2s; }
+.idea-section .profile-section-title a:hover { color: var(--player); }
+
+.idea-pile { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 18px; margin: 0; padding: 0; list-style: none; }
+.idea-card { position: relative; display: flex; }
+.idea-card article { display: flex; flex-direction: column; width: 100%; padding: 20px 22px 22px; border: 1px solid var(--clr-rule); border-top: 3px solid var(--stage); border-radius: 4px; background: repeating-linear-gradient(to bottom, transparent 0 31px, color-mix(in srgb, var(--clr-rule) 45%, transparent) 31px 32px), var(--clr-surface); transition: border-color .2s, transform .25s; }
+.idea-card:hover article, .idea-card:focus-within article { border-color: var(--stage); transform: translateY(-3px); }
+.idea-card-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--clr-muted); }
+.idea-name { margin-top: 16px; font: 800 clamp(28px, 2.6vw, 36px)/.95 var(--font-barlow-condensed), sans-serif; letter-spacing: -.02em; text-transform: uppercase; }
+.idea-pitch { margin-top: 12px; color: var(--clr-muted); font-size: 15px; line-height: 1.6; }
+.idea-link { align-self: flex-start; margin-top: auto; padding-top: 18px; font: 11px/1 var(--font-jetbrains), monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--stage); }
+.idea-link:hover { color: var(--clr-ink); }
+
+.profile-ideas-lead { margin-bottom: clamp(40px, 5vw, 64px); }
+.idea-pile-more { display: inline-flex; gap: 10px; margin-top: 26px; font: 11px/1 var(--font-jetbrains), monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--player); }
+.idea-pile-more:hover { color: var(--clr-ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .idea-card article { transition: none; }
+  .idea-card:hover article, .idea-card:focus-within article { transform: none; }
+}

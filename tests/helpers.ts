@@ -1,8 +1,9 @@
-import { expect, type Page } from '@playwright/test'
+import { expect, type Locator, type Page } from '@playwright/test'
+import type { Idea } from '@/config/ideas'
 import type { Person } from '@/config/people'
-import { profileCopy } from '@/config/site'
+import { ideasPage, profileCopy } from '@/config/site'
 
-export const routes = ['/', '/games', '/lab', '/john', '/joe'] as const
+export const routes = ['/', '/games', '/lab', '/ideas', '/john', '/joe'] as const
 
 // Parse every JSON-LD block on the page and flatten @graph entries into one list.
 export async function jsonLdNodes(page: Page): Promise<Record<string, unknown>[]> {
@@ -38,5 +39,22 @@ export async function expectProfileHeader(page: Page, person: Person) {
   for (const [index, link] of person.links.entries()) {
     await expect(links.nth(index)).toContainText(link.label)
     await expect(links.nth(index)).toHaveAttribute('href', link.href)
+  }
+}
+
+// A person's idea pile: one card per idea, in config order, with its kind, stage
+// and pitch, and a link only where the idea has a public page.
+export async function expectIdeaPile(scope: Locator | Page, ideas: readonly Idea[], firstName: string) {
+  const pile = scope.getByRole('list', { name: ideasPage.pileTitle(firstName), exact: true })
+  const cards = pile.getByRole('article')
+  await expect(cards).toHaveCount(ideas.length)
+  for (const [index, idea] of ideas.entries()) {
+    const card = cards.nth(index)
+    await expect(card.getByRole('heading')).toHaveText(idea.name)
+    await expect(card.locator('.idea-card-top')).toContainText(idea.kind)
+    await expect(card.locator('.idea-stage')).toHaveText(idea.stage)
+    await expect(card.getByText(idea.pitch, { exact: true })).toBeVisible()
+    if (idea.url) await expect(card.getByRole('link')).toHaveAttribute('href', idea.url)
+    else await expect(card.getByRole('link')).toHaveCount(0)
   }
 }

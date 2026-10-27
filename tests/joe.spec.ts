@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test'
 import { gamesBy } from '@/config/games'
+import { ideasBy } from '@/config/ideas'
 import { people } from '@/config/people'
 import { projectById } from '@/config/projects'
 import { profilePages } from '@/config/site'
-import { expectProfileHeader, jsonLdNodes } from './helpers'
+import { expectIdeaPile, expectProfileHeader, jsonLdNodes } from './helpers'
 
 const joe = people.joe
 
@@ -11,10 +12,9 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/joe', { waitUntil: 'networkidle' })
 })
 
-test('the profile shows his avatar and intro, with no photo, stats or links yet', async ({ page }) => {
+test('the profile shows his avatar, bio and stats, with no photo or links yet', async ({ page }) => {
   await expectProfileHeader(page, joe)
-  await expect(page.locator('.profile-bio')).toHaveText(joe.bio.flatMap((part) => part.paragraphs).join(''))
-  await expect(page.locator('.player-stats')).toHaveCount(0)
+  await expect(page.locator('.profile .player-stats')).toBeVisible()
   await expect(page.locator('.profile-links')).toHaveCount(0)
 })
 
@@ -41,11 +41,20 @@ test('his projects link out only where a live site exists', async ({ page }) => 
   await expect(page.getByRole('link', { name: /NYBEC/ })).toHaveAttribute('href', 'https://nybec.com')
 })
 
-test('there is no games section while his games are still to come', async ({ page }) => {
-  expect(gamesBy(joe.id)).toEqual([])
-  await expect(page.locator('.mini-cart-grid')).toHaveCount(0)
+test('his games link to their cabinet cards', async ({ page }) => {
   const gamesSection = profilePages.joe.sections.find((section) => section.kind === 'games')!
-  await expect(page.getByRole('region', { name: gamesSection.title })).toHaveCount(0)
+  const region = page.getByRole('region', { name: gamesSection.title })
+  const theirGames = gamesBy(joe.id)
+  expect(theirGames.length).toBeGreaterThan(0)
+  await expect(region.getByRole('link')).toHaveCount(theirGames.length)
+  for (const game of theirGames) await expect(region.getByRole('link', { name: new RegExp(game.name) })).toHaveAttribute('href', `/games#${game.id}`)
+})
+
+test('his idea pile shows every idea from config', async ({ page }) => {
+  const ideasSection = profilePages.joe.sections.find((section) => section.kind === 'ideas')!
+  const region = page.getByRole('region', { name: ideasSection.title })
+  await expectIdeaPile(region, ideasBy(joe.id), joe.firstName)
+  await expect(region.getByRole('link', { name: /See both piles/ })).toHaveAttribute('href', '/ideas')
 })
 
 test('ProfilePage and Person JSON-LD for Joe', async ({ page }) => {

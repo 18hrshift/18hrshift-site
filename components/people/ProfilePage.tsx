@@ -1,10 +1,13 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { gamesBy } from '@/config/games'
+import { ideasBy } from '@/config/ideas'
 import type { Person } from '@/config/people'
 import { projectById } from '@/config/projects'
-import { profileCopy, profilePages, type ProfileSection } from '@/config/site'
+import { ideasPage, profileCopy, profilePages, type ProfileSection } from '@/config/site'
 import { profileJsonLd } from '@/lib/structured-data'
 import { MiniCartridge } from '@/components/games/GameCard'
+import { IdeaPile } from '@/components/ideas/IdeaPile'
 import { PlayerStats } from '@/components/people/PlayerStats'
 import { ProjectFeature } from '@/components/projects/ProjectFeature'
 import { SystemList } from '@/components/projects/SystemList'
@@ -13,6 +16,15 @@ import { ExternalLink, JsonLd } from '@/components/ui/primitives'
 function SectionBody({ person, section }: { person: Person; section: ProfileSection }) {
   if (section.kind === 'projects') return <div className="profile-projects">{section.projects.map((id) => <ProjectFeature key={id} project={projectById(id)} />)}</div>
   if (section.kind === 'systems') return <SystemList />
+  if (section.kind === 'ideas') {
+    return (
+      <>
+        {section.lead && <div className="profile-projects profile-ideas-lead">{section.lead.map((id) => <ProjectFeature key={id} project={projectById(id)} />)}</div>}
+        <IdeaPile ideas={ideasBy(person.id)} label={ideasPage.pileTitle(person.firstName)} />
+        <Link className="idea-pile-more" href={ideasPage.path}>{ideasPage.profileLink} <span aria-hidden="true">→</span></Link>
+      </>
+    )
+  }
   return (
     <ul className="mini-cart-grid">
       {gamesBy(person.id).map((game) => <MiniCartridge key={game.id} game={game} />)}
@@ -24,7 +36,11 @@ function SectionBody({ person, section }: { person: Person; section: ProfileSect
 // links, then the sections listed for that person in config/site.ts.
 export function ProfilePage({ person }: { person: Person }) {
   const { description, sections } = profilePages[person.id]
-  const visible = sections.filter((section) => section.kind !== 'games' || gamesBy(person.id).length > 0)
+  const visible = sections.filter((section) => {
+    if (section.kind === 'games') return gamesBy(person.id).length > 0
+    if (section.kind === 'ideas') return ideasBy(person.id).length > 0 || (section.lead?.length ?? 0) > 0
+    return true
+  })
   return (
     <>
       <JsonLd data={profileJsonLd(person, description)} />
