@@ -4,6 +4,7 @@ Personalized versions of the 18hr skull for the person pages. Source art only; n
 
 - `drafts/`: first round, generated October 27, 2026. `john-*` (video games, Jets green with no team logo) and `joe-*` (music). Saved as 64-color palette PNGs at 1024px.
 - `round2/`: matched John + Joe pairs, one per style direction (sticker, neon, screenprint, pixel), white on black with color, generated October 27, 2026 after John picked the gamer headset and the studio headphones. `gen_pairs.py` draws both characters in one image so the style matches between them; crop each half to a square for an avatar.
+- `round3/`: neon and pixel pairs after John's round 2 notes (Joe made distinct with sunglasses, speakers and different headphones; John's controller held from behind). Each style twice: Joe's shades on, and pushed up. `gen_round3.py` uses the round 2 pair as the style reference. Known flaw: neon Joe grew an extra row of jaw legs.
 - `gen_skulls.py`: the round 1 generator. It sends the 18hr lettermark as a reference image to OpenRouter (`openai/gpt-5.4-image-2`) so the dome, ring eyes and three-leg jaw stay consistent, then adds one personal element per variant. Prompts live in its `VARIANTS` table.
 
 ```bash
