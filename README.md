@@ -1,6 +1,6 @@
 # 18HRSHIFT
 
-The studio website: a portfolio of real products and systems, an interactive visual lab, and a preview of Games, Media, and Industries.
+The joint portfolio and launch pad of John Byrnes and Joe Lanellotti: their games, platforms, side projects, an interactive Three.js lab and the systems they run. Nothing is for sale; collaborators are welcome.
 
 ## Run locally
 
@@ -9,28 +9,55 @@ npm ci
 npm run dev -- --port 3318
 ```
 
-Next.js 16 App Router, React 19, TypeScript, Tailwind CSS 4, and Three.js. The page is statically rendered; the visual lab loads in the browser. No application credentials or paid API calls are needed.
+Next.js 16 App Router, React 19, TypeScript, Tailwind CSS 4 and Three.js. Every page is statically rendered; the lab scene loads in the browser. No application credentials or paid API calls are needed.
 
-## Content and design
+## Pages
 
-- `config/site.ts`: identity, navigation, contact and social links.
-- `config/projects.ts`: all seven portfolio stories, features, availability and public destinations. Remove an entry here to remove it from the gallery and its filters.
-- `config/lab.ts`: the three experiments and initial settings.
-- `components/sections/Universe.tsx`: Games, Media and Industries teaser content.
-- `app/globals.css`: shared design tokens, layout and typography.
-- `styles/`: scoped portfolio, lab and universe styles.
+| Route | What it shows |
+| --- | --- |
+| `/` | Hero, the tag ticker, the P1/P2 character select with the origin story and player stats, featured work (each card tagged with whose it is), the games strip, a lab teaser and "Build with us" contact |
+| `/games` | Every game as a cartridge card: genre, owner, a real gameplay capture, an honest one-line description, status and a play link. An empty slot is held for Joe's games |
+| `/lab` | The Three.js lab (liquid chrome, particle field, terrain) with its controls, then the systems case studies (Bedrock SQL, OpenWrt network, home lab) in native dialogs |
+| `/john`, `/joe` | Player profiles from one template (`components/people/ProfilePage.tsx`): avatar, photo when there is one, bio, stats, links, then the sections listed for that person |
 
-The portfolio covers Embersave, Specter 1-1, Hairraiser, Openwater, Bedrock SQL, OpenWrt and the home lab. Status labels distinguish available sites, prototypes, works in development and privately operated systems. Infrastructure copy describes capabilities without publishing operational endpoints, credentials or network topology.
+Each route has its own title, description, canonical URL and generated share image (`opengraph-image.tsx` in its folder, drawn by `lib/og.tsx`). `app/sitemap.ts` and `app/robots.ts` cover the routes. JSON-LD (`lib/structured-data.ts`) puts an Organization with the stable `@id` `https://18hrshift.com/#org` on `/`, with both founders as Person `@id`s, and a ProfilePage plus Person (`worksFor` the organization) on each profile.
 
-Embersave and Hairraiser artwork uses their existing brand assets. The Specter image is a capture of actual browser gameplay. Openwater's map and the systems diagrams are illustrations, not product screenshots or live telemetry. Keep claims and availability aligned with each project's maintained source documentation.
+## Content lives in config
 
-## Interactions
+Components read these files; no copy, link or path is typed anywhere else.
 
-- Project filters and native modal case studies, with Escape, keyboard focus handling and scroll restoration.
-- Liquid chrome, particle field and generative terrain rendered in real time. Energy, disturbance, pause/play and reset controls change the actual scene.
-- Independent hero motion control. Both canvases respect reduced motion and stop drawing offscreen or in hidden tabs.
-- A static illustration and explanatory message when WebGL is unavailable. The rest of the site remains usable.
-- Expandable division teasers and a mobile navigation menu.
+- `config/site.ts`: identity, navigation (the player links come from `config/people.ts`), contact, and the copy for every page: home sections and featured items, the games page, the lab page, project labels and the profile page sections for each person.
+- `config/people.ts`: John and Joe. Name, slot, page, card line, avatar, optional photo, bio sections, pull quote, links (also their JSON-LD `sameAs`), `knowsAbout` and player stats. Only stats with a value render, and the block disappears when none do. To swap an avatar, change its `avatar.src`.
+- `config/games.ts`: every game with its owner, genre, honest line, status, URL, accent and gameplay capture. Copy and status come from each game's own README and status docs.
+- `config/projects.ts`: everything that isn't a game. Platforms, the podcast, ideas, Joe's projects and the systems. Systems (`kind: 'System'`) appear on both `/lab` and John's profile from the same entries. Projects with a live site carry a `capture`.
+- `config/lab.ts`: the three experiments, their defaults and the lab's labels.
+
+Status labels must stay honest: prototypes stay prototypes, and projects without a public site have no link. Don't publish private endpoints, account details, credentials, network topology or unsupported outcome or scale claims. No em dashes in copy; `tests/layout.spec.ts` checks every page.
+
+## Code layout
+
+- `app/`: routes, metadata, share images, sitemap, robots, 404. `app/globals.css` holds the color tokens and shared layout.
+- `components/home/`: the home sections. `components/people/`: player card, stats and the profile template. `components/games/`: cartridge, mini cartridge and the empty slot. `components/projects/`: artwork, details, dialog, inline feature and the systems list. `components/lab/`: the lab workbench and Three.js scene. `components/ui/primitives.tsx`: shared tags, headings, links, the equalizer motif and the JSON-LD script. `components/brand/Lettermark.tsx`: the 18hr lettermark.
+- `lib/`: metadata, structured data, share images and small config readers.
+- `styles/`: `home.css`, `people.css`, `games.css`, `projects.css` and `lab.css`.
+
+## Images
+
+- `public/games/`: gameplay captures of each live game (1440x900 WebP), taken with Playwright by `npm run capture:sites`. Alt text starts "Gameplay capture:" and each card labels its image the same way.
+- `public/projects/`: Embersave and Hairraiser brand art; `power-hour-club.webp` and `nybec.webp` are captures of those live sites, labelled "Site capture". The podcast, Marginalia, the Ouran fan translation and the systems art are illustrations drawn in code.
+- `public/people/`: avatars and John's photo. The avatars are first-round drafts from `assets/avatars/drafts/`, prepared with `assets/avatars/prepare_web.py` (see `assets/avatars/README.md`).
+- `public/lab/liquid-chrome.webp`: a still of the liquid chrome scene captured from `/lab`, used by the home teaser.
+- `public/brand/lettermark-silhouette.png`: the filled outline of `public/assets/lettermark-black.png`, used as a CSS mask for the hero sticker.
+
+To refresh captures, run `npm run capture:sites` (or name ids: `npm run capture:sites -- sorter nybec`). Each game has a short click path in the script that gets past its menus into play. Look at the results before committing; live sites change.
+
+## Design
+
+Dark tokens with a lime accent, plus blue, orange and magenta. Barlow Condensed for display, Barlow for body, JetBrains Mono for labels. The identity is internet native, AI native, gamer, creative and music, with two orchestrated moments: the character select (selection brackets snap in on hover or focus) and the tag ticker. Games are cartridges; a small equalizer is the music motif.
+
+- Core content renders without JavaScript. Links and buttons are native, focus is visible and the pointer is the browser's own.
+- The ticker pauses on hover or with its "Pause motion" checkbox (no JavaScript needed) and is a static row under reduced motion. Equalizer bars play a few beats and rest. The lab starts paused under reduced motion and stops drawing offscreen or in hidden tabs, and disposes its Three.js resources.
+- No page overflows horizontally from 320 to 1440px.
 
 ## Verification
 
@@ -41,8 +68,8 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-`test.sh` runs TypeScript and a production build. Browser tests launch that production build on port 3320, and cover all seven project dialogs, filters, distinct lab renders, energy/burst/pause/reset, mobile navigation, division panels, 320–1440px overflow, reduced motion, unsupported WebGL and core content without JavaScript. Set `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` to use an existing Chromium binary, or `PLAYWRIGHT_BASE_URL` to test an already running preview. Test artifacts are ignored by Git.
+`test.sh` runs TypeScript and a production build. Browser tests start that build on port 3320 and cover the home sections and JSON-LD, the ticker pause, every game card and capture, the empty slot, both profiles (bio, stats, links, project links, systems dialogs, JSON-LD), the lab scenes and controls, system dialogs with focus handling, reduced motion, unsupported WebGL, mobile navigation, 320 to 1440px overflow on every page, core content without JavaScript, per-page metadata and share images, the sitemap and robots, and em dashes. `tests/player-stats.spec.ts` checks that empty stats are dropped and filled ones render. Set `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` to use an existing Chromium, or `PLAYWRIGHT_BASE_URL` to test a running server. Test artifacts are ignored by Git.
 
 ## Delivery
 
-The repository is bound to the existing `18hrshift-site` Vercel project. The September 26, 2026 overhaul was committed to `main` and deployed with the Vercel CLI to https://18hrshift.com. Preview deployments are separate. Verify the current project/team binding before publishing, and verify the production alias afterward. Do not assume a Git push deployed successfully: no Git-triggered deployment appeared during this delivery.
+The repository is bound to the existing `18hrshift-site` Vercel project. Deploy with the Vercel CLI from a checkout linked to that project (`.vercel/project.json`, gitignored): `vercel deploy` for a preview, `vercel deploy --prod` only for an approved production release. Do not assume a Git push deploys anything. Verify the project, target and alias after every deploy.
