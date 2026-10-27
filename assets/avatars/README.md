@@ -11,3 +11,14 @@ python3 assets/avatars/gen_skulls.py public/assets/lettermark-black.png assets/a
 ```
 
 Measured cost: about $0.24 per image. The generator writes full-size PNGs; shrink them before committing.
+
+## On the site
+
+The relaunch serves `drafts/john-gamer.png` and `drafts/joe-headphones.png` as placeholders until the final art (white on black, with color) is picked. `prepare_web.py` made the served files: with `--line-art` it keeps the black lines, makes the white paper transparent and lightens the lines so they read on the dark site, then saves a 640px palette PNG.
+
+```bash
+python3 assets/avatars/prepare_web.py assets/avatars/drafts/john-gamer.png public/people/john-avatar.png --line-art
+python3 assets/avatars/prepare_web.py assets/avatars/drafts/joe-headphones.png public/people/joe-avatar.png --line-art
+```
+
+For art already made for a dark background, drop `--line-art` and the script only resizes. Then point `avatar.src` in `config/people.ts` at the new file (and update its `alt`).
