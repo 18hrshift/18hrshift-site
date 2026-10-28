@@ -95,7 +95,7 @@ export const people: Readonly<Record<PersonId, Person>> = {
     links: [
       { label: 'X', href: 'https://x.com/j_theproducer' },
       { label: 'LinkedIn', href: 'https://www.linkedin.com/in/john-byrnes-964a38237/' },
-      { label: 'GitHub', href: 'https://github.com/18hrshift' },
+      { label: 'GitHub', href: 'https://github.com/byrnzo' },
     ],
     knowsAbout: ['Economics', 'AI agents', 'Automation', 'Infrastructure', 'Podcast production'],
     // Only stats with a value render; an empty one stays off the page.
