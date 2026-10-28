@@ -1,4 +1,4 @@
-/* The idea pile: index cards with a stage stamp, on /ideas and the profile pages. */
+/* The idea pile: index cards with a stage stamp, on /side-quests and the profile pages. */
 
 /* Stage colors run from cold (a napkin sketch) to warm (it works), with shelved greyed out. */
 [data-stage="Napkin"] { --stage: var(--clr-muted); }

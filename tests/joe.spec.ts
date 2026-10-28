@@ -3,7 +3,7 @@ import { gamesBy } from '@/config/games'
 import { ideasBy } from '@/config/ideas'
 import { people } from '@/config/people'
 import { projectById } from '@/config/projects'
-import { profilePages } from '@/config/site'
+import { ideasPage, profilePages } from '@/config/site'
 import { expectIdeaPile, expectProfileHeader, jsonLdNodes } from './helpers'
 
 const joe = people.joe
@@ -54,7 +54,7 @@ test('his idea pile shows every idea from config', async ({ page }) => {
   const ideasSection = profilePages.joe.sections.find((section) => section.kind === 'ideas')!
   const region = page.getByRole('region', { name: ideasSection.title })
   await expectIdeaPile(region, ideasBy(joe.id), joe.firstName)
-  await expect(region.getByRole('link', { name: /See both piles/ })).toHaveAttribute('href', '/ideas')
+  await expect(region.getByRole('link', { name: ideasPage.profileLink })).toHaveAttribute('href', ideasPage.path)
 })
 
 test('ProfilePage and Person JSON-LD for Joe', async ({ page }) => {

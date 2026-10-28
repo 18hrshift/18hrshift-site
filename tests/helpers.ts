@@ -3,7 +3,7 @@ import type { Idea } from '@/config/ideas'
 import type { Person } from '@/config/people'
 import { ideasPage, profileCopy } from '@/config/site'
 
-export const routes = ['/', '/games', '/lab', '/ideas', '/john', '/joe'] as const
+export const routes = ['/', '/games', '/lab', ideasPage.path, '/john', '/joe'] as const
 
 // Parse every JSON-LD block on the page and flatten @graph entries into one list.
 export async function jsonLdNodes(page: Page): Promise<Record<string, unknown>[]> {

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { ideas, ideasBy, ideaStages } from '@/config/ideas'
 import { people, playerOrder } from '@/config/people'
-import { home, ideasPage } from '@/config/site'
+import { home, ideasPage, site } from '@/config/site'
 import { expectIdeaPile } from './helpers'
 
 test('every idea has a known owner, a unique id and no em dashes in its pitch', () => {
@@ -31,6 +31,6 @@ test('the pile page shows the stage legend and both piles', async ({ page }) => 
 
 test('the nav and the contact section lead to the pile', async ({ page }) => {
   await page.goto('/', { waitUntil: 'networkidle' })
-  await expect(page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Ideas' })).toHaveAttribute('href', ideasPage.path)
+  await expect(page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: site.nav.find((link) => link.href === ideasPage.path)!.label })).toHaveAttribute('href', ideasPage.path)
   await expect(page.locator('#contact').getByRole('link', { name: home.contact.pileLink.label })).toHaveAttribute('href', ideasPage.path)
 })

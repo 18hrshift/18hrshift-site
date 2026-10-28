@@ -6,9 +6,9 @@ Relaunched October 27, 2026 as the joint portfolio of John Byrnes and Joe Lanell
 
 - Next.js 16 App Router, React 19, TypeScript, Tailwind CSS 4, raw Three.js.
 - Read the installed Next.js guides before changing framework behavior.
-- Routes: `/` (home sections in `components/home/`), `/games`, `/lab`, `/ideas`, `/john` and `/joe`. Both profiles render `components/people/ProfilePage.tsx`; a person's sections are listed in `profilePages` in `config/site.ts`.
+- Routes: `/` (home sections in `components/home/`), `/games`, `/lab`, `/side-quests`, `/john` and `/joe`. Both profiles render `components/people/ProfilePage.tsx`; a person's sections are listed in `profilePages` in `config/site.ts`.
 - `config/site.ts`, `config/people.ts`, `config/games.ts`, `config/projects.ts`, `config/ideas.ts` and `config/lab.ts` own all content. Components read config; don't type copy, links or paths into components or duplicate config values.
-- Idea pile pitches describe what actually got built, and the stage stays honest. No private hosts, client names or other people's data in them.
+- Idea pile pitches (Side quests on the site) describe what actually got built, and the stage stays honest. No private hosts, client names or other people's data in them.
 - Player stats render only when they have a value. Avatar paths live in one `config/people.ts` entry each so a swap is one line.
 - Fonts: Barlow Condensed for display, Barlow for body, JetBrains Mono for labels.
 - Shared color tokens live in `app/globals.css`; feature styles in `styles/`. Use the tokens in components. Three.js and the share images read the token values.

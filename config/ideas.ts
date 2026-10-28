@@ -1,5 +1,6 @@
-// The idea pile: less-formed ideas, half-built games and shelved apps. Shown on
-// /ideas and on each person's page. Pitches describe what actually got built, not
+// The idea pile: less-formed ideas, half-built games and shelved apps. The site
+// calls it Side quests (`ideasPage` in config/site.ts): shown on /side-quests and
+// on each person's page. Pitches describe what actually got built, not
 // what it could become, and the stage says honestly how far each one got. Keep
 // private hosts, client names and other people's data out of these.
 
@@ -19,7 +20,7 @@ export type Idea = {
   url?: string
 }
 
-// The legend on /ideas, in order of how far along an idea is.
+// The legend on /side-quests, in order of how far along an idea is.
 export const ideaStages: Readonly<Record<IdeaStage, string>> = {
   Napkin: 'Notes, research and a hunch',
   Prototype: 'Some of it runs',

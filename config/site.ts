@@ -14,7 +14,7 @@ export const site = {
   nav: [
     { label: 'Games', href: '/games' },
     { label: 'Lab', href: '/lab' },
-    { label: 'Ideas', href: '/ideas' },
+    { label: 'Side quests', href: '/side-quests' },
     ...playerOrder.map((id) => ({ label: people[id].firstName, href: people[id].page })),
   ],
   contactLink: { label: 'Build with us', href: '/#contact' },
@@ -88,7 +88,7 @@ export const home = {
     title: ['Got an idea?', 'Let’s build it.'],
     body: 'Not a sales pitch. If you’re making something fun and want company, or you have an idea that won’t leave you alone, say hi.',
     emailLabel: 'Start a conversation at',
-    pileLink: { label: 'Or pick one off our idea pile', href: '/ideas' },
+    pileLink: { label: 'Or grab one of our side quests', href: '/side-quests' },
   },
 } as const
 
@@ -123,16 +123,17 @@ export const labPage = {
 } as const
 
 export const ideasPage = {
-  path: '/ideas',
-  metaTitle: 'The idea pile',
+  path: '/side-quests',
+  metaTitle: 'Side quests',
   description: 'Half-built games, shelved apps and napkin sketches from John Byrnes and Joe Lanellotti. Some will come back, and some are up for grabs.',
-  eyebrow: 'Ideas',
-  title: ['The idea', 'pile.'],
+  eyebrow: 'Side quests',
+  title: ['Side', 'quests.'],
   intro: 'Not everything ships. This is where the rest lives: half-built games, shelved apps and napkin sketches. Some of these will come back. If one grabs you, say hi and let’s build it together.',
   legendLabel: 'How far each one got',
-  pileTitle: (firstName: string) => `${firstName}’s pile`,
+// The idea pile (config/ideas.ts), called Side quests on the site.
+  pileTitle: (firstName: string) => `${firstName}’s side quests`,
   visit: 'Take a look',
-  profileLink: 'See both piles',
+  profileLink: 'See all side quests',
 } as const
 
 // Labels shared by project cards, details and dialogs.
@@ -163,23 +164,23 @@ export type ProfileSection =
 export const profilePages: Readonly<Record<PersonId, { metaTitle: string; description: string; sections: readonly ProfileSection[] }>> = {
   john: {
     metaTitle: 'John Byrnes',
-    description: 'John Byrnes, co-founder of 18HRSHIFT. His games, Hairraiser, the Andrew Asks How podcast, the systems he runs and his pile of ideas.',
+    description: 'John Byrnes, co-founder of 18HRSHIFT. His games, Hairraiser, the Andrew Asks How podcast, the systems he runs and his side quests.',
     sections: [
       { id: 'show', title: 'The show', kind: 'projects', projects: ['aah'] },
       { id: 'platform', title: 'The platform', kind: 'projects', projects: ['hairraiser'] },
       { id: 'games', title: 'His games', kind: 'games' },
       { id: 'systems', title: 'Systems', kind: 'systems' },
-      { id: 'ideas', title: 'The idea pile', kind: 'ideas', lead: ['embersave'] },
+      { id: 'ideas', title: 'Side quests', kind: 'ideas', lead: ['embersave'] },
     ],
   },
   joe: {
     metaTitle: 'Joe Lanellotti',
-    description: 'Joe Lanellotti, co-founder of 18HRSHIFT. SpotSlop, Power Hour Club, NYBEC Tracker, OurTV, the Marginalia reading app, a Nintendo DS fan translation and a big pile of game ideas.',
+    description: 'Joe Lanellotti, co-founder of 18HRSHIFT. SpotSlop, Power Hour Club, NYBEC Tracker, OurTV, the Marginalia reading app, a Nintendo DS fan translation and a long list of side quests.',
     sections: [
       { id: 'live', title: 'Live now', kind: 'projects', projects: ['power-hour-club', 'nybec'] },
       { id: 'games', title: 'His games', kind: 'games' },
       { id: 'works', title: 'In the works', kind: 'projects', projects: ['ourtv', 'marginalia', 'ouran'] },
-      { id: 'ideas', title: 'The idea pile', kind: 'ideas' },
+      { id: 'ideas', title: 'Side quests', kind: 'ideas' },
     ],
   },
 }
