@@ -113,7 +113,7 @@ export const people: Readonly<Record<PersonId, Person>> = {
     name: 'Joe Lanellotti',
     firstName: 'Joe',
     page: '/joe',
-    line: 'Co-founder. Second controller, same couch.',
+    line: 'Co-founder. Ships the games, spins the playlists, translates the ones nobody else would.',
     avatar: {
       src: '/people/joe-avatar.png',
       alt: 'Joe’s neon skull avatar in sunglasses, scratching records at a DJ booth.',

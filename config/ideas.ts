@@ -43,9 +43,9 @@ export const ideas: readonly Idea[] = [
     name: 'Dogear',
     owner: 'john',
     kind: 'Tool',
-    stage: 'Working',
+    stage: 'Prototype',
     pitch: 'Turn books you own into offline audiobooks with chapter markers and the cover, in a natural voice that runs on a normal computer. The goal is talking books that blind and low-vision listeners can navigate.',
-    url: 'https://github.com/18hrshift/dogear',
+    url: 'https://github.com/18hrshift/dogear-app',
   },
   {
     id: 'recko',
@@ -159,7 +159,7 @@ export const ideas: readonly Idea[] = [
     owner: 'joe',
     kind: 'Game',
     stage: 'Prototype',
-    pitch: 'A Mass Effect roguelite concept with an AI crewmate who follows what’s happening in your actual game and radios in, out loud.',
+    pitch: 'A Mass Effect fan concept: a roguelite with an AI crewmate who follows what’s happening in your actual game and radios in, out loud.',
   },
 
   // Joe: apps, tools and bots
