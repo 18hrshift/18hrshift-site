@@ -56,6 +56,15 @@ export const ideas: readonly Idea[] = [
     pitch: 'One taste profile from everything you’ve watched, played and read, so you can ask for “something low-stakes and funny tonight” and get picks based on what you actually liked.',
   },
   {
+    id: 'frugelli',
+    name: 'Frugelli',
+    owner: 'john',
+    kind: 'App',
+    stage: 'Prototype',
+    pitch: 'Your weekly grocery circular, made personal. Tell it what you buy and where you shop, and it flags which of your groceries are unusually cheap this week. Southeast Pennsylvania first. The site is up; prices aren’t flowing yet.',
+    url: 'https://frugelli.com',
+  },
+  {
     id: 'open-ordering',
     name: 'Open Ordering',
     owner: 'john',
