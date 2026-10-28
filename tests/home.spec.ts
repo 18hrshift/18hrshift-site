@@ -23,7 +23,7 @@ test('hero, players and origin story render from config', async ({ page }) => {
     const card = players.getByRole('article', { name: person.name })
     await expect(card.getByRole('img', { name: person.avatar.alt })).toBeVisible()
     await expect(card).toContainText(person.line)
-    await expect(card).toContainText(person.slot)
+    await expect(card).toContainText(person.initials)
     await expect(card.getByRole('link')).toHaveCount(1)
     await expect(card.getByRole('link', { name: new RegExp(`${person.firstName}’s page`) })).toHaveAttribute('href', person.page)
   }
@@ -41,7 +41,7 @@ test('featured work links to the real thing and tags each card with its owner', 
   for (const [index, { item }] of items.entries()) {
     const card = cards.nth(index)
     await expect(card.getByRole('heading', { level: 3 })).toContainText(item.name)
-    await expect(card.locator('.owner-tag')).toContainText(people[item.owner].slot)
+    await expect(card.locator('.owner-tag')).toContainText(people[item.owner].initials)
     await expect(card.locator('.owner-tag')).toContainText(people[item.owner].firstName)
     if (item.url) {
       const link = card.getByRole('link', { name: new RegExp(item.name) })

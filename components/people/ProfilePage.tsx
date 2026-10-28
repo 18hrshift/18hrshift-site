@@ -58,7 +58,7 @@ export function ProfilePage({ person }: { person: Person }) {
           )}
         </div>
         <div className="profile-copy">
-          <p className="eyebrow section-eyebrow">{person.slot} / {profileCopy.eyebrow}</p>
+          <p className="eyebrow section-eyebrow">{person.initials} / {profileCopy.eyebrow}</p>
           <h1 className="page-title profile-name">{person.name}</h1>
           <p className="profile-line">{person.line}</p>
           <div className="profile-bio">
@@ -88,7 +88,7 @@ export function ProfilePage({ person }: { person: Person }) {
 
       {visible.map((section) => (
         <section key={section.id} className={`profile-section section-shell player-card--${person.accent}`} aria-labelledby={`${section.id}-heading`}>
-          <h2 id={`${section.id}-heading`} className="profile-section-title"><span className="eyebrow" aria-hidden="true">{person.slot}</span>{section.title}</h2>
+          <h2 id={`${section.id}-heading`} className="profile-section-title"><span className="eyebrow" aria-hidden="true">{person.initials}</span>{section.title}</h2>
           <SectionBody person={person} section={section} />
         </section>
       ))}

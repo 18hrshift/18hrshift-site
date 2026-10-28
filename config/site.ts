@@ -40,7 +40,7 @@ export const home = {
   tickerLabel: 'What we’re about',
   tickerPause: 'Pause motion',
   players: {
-    eyebrow: '01 / Choose your player',
+    eyebrow: '01 / Meet the players',
     title: ['Two players.', 'One shift.'],
     mode: 'Co-op mode',
     readyLabel: 'Ready',

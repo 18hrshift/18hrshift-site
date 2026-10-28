@@ -91,7 +91,7 @@ img { max-width: 100%; height: auto; }
 /* Tags shared by cards */
 .owner-tag { --tag: var(--clr-accent); display: inline-flex; align-items: center; gap: 7px; font: 500 10px/1 var(--font-jetbrains), monospace; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
 .owner-tag--magenta { --tag: var(--clr-magenta); }
-.owner-slot { padding: 4px 5px; background: var(--tag); color: var(--clr-bg); border-radius: 2px; }
+.owner-initials { padding: 4px 5px; background: var(--tag); color: var(--clr-bg); border-radius: 2px; }
 .status-label { display: inline-flex; align-items: center; gap: 8px; font: 10px/1.5 var(--font-jetbrains), monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--clr-ink); }
 .status-label i { width: 6px; height: 6px; border-radius: 50%; background: var(--clr-accent); flex: 0 0 auto; }
 .name-note { display: inline-block; margin-left: 10px; padding: 3px 6px; border: 1px solid var(--clr-rule); border-radius: 2px; font: 9px/1.4 var(--font-jetbrains), monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--clr-muted); vertical-align: middle; }

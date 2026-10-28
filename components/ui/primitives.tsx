@@ -37,7 +37,7 @@ export function OwnerTag({ owner }: { owner: PersonId }) {
   const person = people[owner]
   return (
     <span className={`owner-tag owner-tag--${person.accent}`}>
-      <span className="owner-slot">{person.slot}</span>
+      <span className="owner-initials">{person.initials}</span>
       <span>{person.firstName}</span>
     </span>
   )

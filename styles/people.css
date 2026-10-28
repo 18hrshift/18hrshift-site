@@ -7,7 +7,7 @@
 .player-card { position: relative; display: flex; flex-direction: column; padding: clamp(18px, 2vw, 26px); border: 1px solid var(--clr-rule); border-radius: 6px; background: var(--clr-surface); transition: border-color .25s; }
 .player-card:hover, .player-card:focus-within { border-color: var(--player); }
 .player-card-top { display: flex; justify-content: space-between; align-items: center; color: var(--clr-muted); }
-.player-slot { padding: 5px 8px; background: var(--player); color: var(--clr-bg); font-weight: 500; border-radius: 2px; }
+.player-initials { padding: 5px 8px; background: var(--player); color: var(--clr-bg); font-weight: 500; border-radius: 2px; }
 .player-ready { color: var(--player); }
 .player-avatar { position: relative; display: grid; place-items: center; margin: 18px 0 22px; aspect-ratio: 4 / 3; border-radius: 4px; overflow: hidden; background: radial-gradient(circle at 50% 46%, color-mix(in srgb, var(--player) 22%, transparent), transparent 62%), var(--clr-bg); }
 .player-avatar img { position: relative; z-index: 1; display: block; width: auto; height: 86%; transition: transform .35s cubic-bezier(.2, .9, .3, 1.3); }

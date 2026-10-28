@@ -16,7 +16,7 @@
 .cartridge-label { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 22px 14px 0; padding: 9px 12px; background: var(--cart); color: var(--clr-bg); border-radius: 4px 4px 0 0; }
 .cartridge-genre { font-weight: 500; }
 .cartridge-label .owner-tag { color: var(--clr-bg); }
-.cartridge-label .owner-slot { background: var(--clr-bg); color: var(--cart); }
+.cartridge-label .owner-initials { background: var(--clr-bg); color: var(--cart); }
 .cartridge-screen { position: relative; margin: 0 14px; aspect-ratio: 16 / 10; overflow: hidden; border: 6px solid var(--clr-bg); border-top: 0; background: var(--clr-bg); }
 .cartridge-screen img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .6s; }
 .cartridge:hover .cartridge-screen img { transform: scale(1.04); }
@@ -24,7 +24,7 @@
 .cartridge--empty { border-style: dashed; background: transparent; }
 .cartridge--empty .cartridge-label { background: transparent; color: var(--cart); border: 1px dashed var(--cart); border-bottom: 0; }
 .cartridge--empty .cartridge-label .owner-tag { color: var(--cart); }
-.cartridge--empty .cartridge-label .owner-slot { background: var(--cart); color: var(--clr-bg); }
+.cartridge--empty .cartridge-label .owner-initials { background: var(--cart); color: var(--clr-bg); }
 .cartridge-screen--empty { display: grid; place-items: center; border-color: var(--clr-surface); background: repeating-linear-gradient(135deg, var(--clr-surface) 0 10px, var(--clr-bg) 10px 20px); color: var(--clr-muted); }
 .cartridge-body { display: flex; flex-direction: column; gap: 12px; flex: 1; padding: 20px 22px 22px; }
 .cartridge-name { font: 800 clamp(30px, 2.6vw, 40px)/1 var(--font-barlow-condensed), sans-serif; text-transform: uppercase; letter-spacing: -.02em; }

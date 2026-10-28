@@ -56,10 +56,10 @@ export async function renderOg({ eyebrow, title, footer, image }: OgInput) {
   )
 }
 
-// Share image for a player profile: name, slot and their skull avatar.
+// Share image for a player profile: name, initials and their skull avatar.
 export function renderProfileOg(person: Person) {
   const [first, ...rest] = person.name.split(' ')
-  return renderOg({ eyebrow: `${person.slot} / ${profileCopy.eyebrow}`, title: [first, rest.join(' ')], footer: person.line, image: person.avatar.src })
+  return renderOg({ eyebrow: `${person.initials} / ${profileCopy.eyebrow}`, title: [first, rest.join(' ')], footer: person.line, image: person.avatar.src })
 }
 
-export const profileOgAlt = (person: Person) => `${person.name}, ${person.slot} at ${site.name}, with a skull avatar.`
+export const profileOgAlt = (person: Person) => `${person.name}, co-founder of ${site.name}, with a skull avatar.`

@@ -32,7 +32,7 @@ export default function IdeasPage() {
         return (
           <section key={id} className={`idea-section section-shell player-card--${person.accent}`} aria-labelledby={`${id}-pile`}>
             <h2 id={`${id}-pile`} className="profile-section-title">
-              <span className="eyebrow" aria-hidden="true">{person.slot}</span>
+              <span className="eyebrow" aria-hidden="true">{person.initials}</span>
               <Link href={person.page}>{title}</Link>
             </h2>
             <IdeaPile ideas={ideasBy(id)} label={title} />

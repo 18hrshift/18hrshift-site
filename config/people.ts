@@ -30,7 +30,8 @@ export type BioSection = { title?: string; paragraphs: readonly string[] }
 
 export type Person = {
   id: PersonId
-  slot: 'P1' | 'P2'
+  // Shown as their badge on cards, tags and profiles. Initials, not P1/P2: no one's second.
+  initials: string
   name: string
   firstName: string
   page: string
@@ -50,7 +51,7 @@ export type Person = {
 export const people: Readonly<Record<PersonId, Person>> = {
   john: {
     id: 'john',
-    slot: 'P1',
+    initials: 'JB',
     name: 'John Byrnes',
     firstName: 'John',
     page: '/john',
@@ -109,7 +110,7 @@ export const people: Readonly<Record<PersonId, Person>> = {
   },
   joe: {
     id: 'joe',
-    slot: 'P2',
+    initials: 'JL',
     name: 'Joe Lanellotti',
     firstName: 'Joe',
     page: '/joe',

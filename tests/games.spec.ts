@@ -34,6 +34,6 @@ test('the cabinet holds an empty slot for the player whose games are still comin
   await page.goto('/games', { waitUntil: 'networkidle' })
   const slot = page.getByRole('article', { name: people[gamesPage.emptySlot.owner].firstName, exact: true })
   await expect(slot).toContainText(gamesPage.emptySlot.body)
-  await expect(slot.locator('.owner-tag')).toContainText(people[gamesPage.emptySlot.owner].slot)
+  await expect(slot.locator('.owner-tag')).toContainText(people[gamesPage.emptySlot.owner].initials)
   await expect(slot.getByRole('link')).toHaveCount(0)
 })

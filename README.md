@@ -15,7 +15,7 @@ Next.js 16 App Router, React 19, TypeScript, Tailwind CSS 4 and Three.js. Every 
 
 | Route | What it shows |
 | --- | --- |
-| `/` | Hero, the tag ticker, the P1/P2 character select with the origin story and player stats, featured work (each card tagged with whose it is), the games strip, a lab teaser and "Build with us" contact |
+| `/` | Hero, the tag ticker, the two players side by side (initials, not P1/P2) with the origin story, its photo and player stats, featured work (each card tagged with whose it is), the games strip, a lab teaser and "Build with us" contact |
 | `/games` | Every game as a cartridge card: genre, owner, a real gameplay capture, an honest one-line description, status and a play link. An empty slot is held for more of Joe's games |
 | `/lab` | The Three.js lab (liquid chrome, particle field, terrain) with its controls, then the systems case studies (Bedrock SQL, OpenWrt network, home lab) in native dialogs |
 | `/side-quests` | Side quests (the idea pile in code): half-built games, shelved apps and napkin sketches as index cards, one list per person, with a legend for how far each one got |
@@ -28,7 +28,7 @@ Each route has its own title, description, canonical URL and generated share ima
 Components read these files; no copy, link or path is typed anywhere else.
 
 - `config/site.ts`: identity, navigation (the player links come from `config/people.ts`), contact, and the copy for every page: home sections and featured items, the games page, the lab page, project labels and the profile page sections for each person.
-- `config/people.ts`: John and Joe. Name, slot, page, card line, avatar, optional photo, bio sections, pull quote, links (also their JSON-LD `sameAs`), `knowsAbout` and player stats. A stat is one answer or a short list (shown comma-separated under the plural label). Only stats with a value render, and the block disappears when none do. To swap an avatar, change its `avatar.src`; the art and its generators are in `assets/avatars/` on `main`.
+- `config/people.ts`: John and Joe. Name, initials, page, card line, avatar, optional photo, bio sections, pull quote, links (also their JSON-LD `sameAs`), `knowsAbout` and player stats. A stat is one answer or a short list (shown comma-separated under the plural label). Only stats with a value render, and the block disappears when none do. To swap an avatar, change its `avatar.src`; the art and its generators are in `assets/avatars/` on `main`.
 - `config/games.ts`: every game with its owner, genre, honest line, status, URL, accent and gameplay capture. Copy and status come from each game's own README and status docs.
 - `config/projects.ts`: everything that isn't a game. Platforms, the podcast, ideas, Joe's projects and the systems. Systems (`kind: 'System'`) appear on both `/lab` and John's profile from the same entries. Projects with a live site carry a `capture`.
 - `config/lab.ts`: the three experiments, their defaults and the lab's labels.

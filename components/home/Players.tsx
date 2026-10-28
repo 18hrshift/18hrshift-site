@@ -4,8 +4,8 @@ import { home } from '@/config/site'
 import { PlayerCard } from '@/components/people/PlayerCard'
 import { SectionHead } from '@/components/ui/primitives'
 
-// Character select: P1 and P2 side by side in co-op, then the origin story with a
-// photo of the two of them.
+// The two players side by side, as equals, then the origin story with a photo of
+// the two of them.
 export function Players() {
   const { players } = home
   return (

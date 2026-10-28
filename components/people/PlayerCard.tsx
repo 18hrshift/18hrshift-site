@@ -10,7 +10,7 @@ export function PlayerCard({ person }: { person: Person }) {
   return (
     <article className={`player-card player-card--${person.accent}`} aria-labelledby={headingId}>
       <div className="player-card-top eyebrow">
-        <span className="player-slot">{person.slot}</span>
+        <span className="player-initials">{person.initials}</span>
         <span className="player-ready">{home.players.readyLabel}</span>
       </div>
       <div className="player-avatar">
