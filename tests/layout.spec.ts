@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { blogZone } from '@/config/blog-zone'
 import { games } from '@/config/games'
 import { people } from '@/config/people'
 import { systems } from '@/config/projects'
@@ -96,6 +97,7 @@ test('sitemap lists every page and robots points at it', async ({ request }) => 
   const robots = await (await request.get('/robots.txt')).text()
   expect(robots).toContain('Allow: /')
   expect(robots).toContain(`Sitemap: ${site.url}/sitemap.xml`)
+  expect(robots).toContain(`Sitemap: ${site.url}${blogZone.path}/sitemap.xml`)
 })
 
 test('no em dashes in any page copy', async ({ page }) => {

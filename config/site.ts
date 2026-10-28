@@ -2,12 +2,13 @@
 // values; none of this text should be typed anywhere else.
 
 import { people, playerOrder, type PersonId } from './people'
+import { siteOrigin } from './origin'
 
 export const site = {
   name: '18HRSHIFT',
   tagline: 'Ideas don’t clock out.',
   description: '18HRSHIFT is John Byrnes and Joe Lanellotti: internet native, AI native, building games, music tools, platforms and odd experiments out in the open.',
-  url: 'https://18hrshift.com',
+  url: siteOrigin,
   locale: 'en_US',
   email: 'admin@18hrshift.com',
   github: 'https://github.com/18hrshift',
