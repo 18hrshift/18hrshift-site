@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { games } from '@/config/games'
 import { people } from '@/config/people'
 import { home, site } from '@/config/site'
@@ -101,4 +103,15 @@ test('the tag ticker scrolls, and its checkbox pauses it without JavaScript stat
   await page.mouse.move(0, 0)
   await expect(page.locator('#ticker-pause')).toBeChecked()
   expect(await playState()).toBe('paused')
+})
+
+test('the origin story shows the photo of the two of them, stripped of metadata', async ({ page }) => {
+  const photo = home.players.originPhoto
+  const origin = page.locator('#players .origin')
+  await expect(origin.getByRole('img', { name: photo.alt })).toBeVisible()
+  await expect(origin.locator('figcaption')).toHaveText(photo.caption)
+
+  // The served file carries no EXIF (camera, time, GPS), color profile, XMP or IPTC block.
+  const bytes = readFileSync(join(process.cwd(), 'public', photo.src)).toString('latin1')
+  for (const marker of ['Exif\0\0', 'ICC_PROFILE', 'http://ns.adobe.com/xap', 'Photoshop 3.0']) expect(bytes).not.toContain(marker)
 })

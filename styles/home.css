@@ -42,7 +42,11 @@
 .player-select-slot { position: relative; display: flex; }
 .player-select-slot > .player-card { flex: 1; }
 .coop-badge { position: absolute; z-index: 3; top: 50%; left: calc(clamp(20px, 3vw, 48px) / -2); transform: translate(-50%, -50%) rotate(-90deg); padding: 7px 12px; background: var(--clr-bg); border: 1px solid var(--clr-rule); color: var(--clr-ink); white-space: nowrap; }
-.origin { position: relative; margin-top: clamp(28px, 4vw, 48px); padding: clamp(26px, 3.5vw, 48px); border: 1px solid var(--clr-rule); border-radius: 6px; background: linear-gradient(135deg, color-mix(in srgb, var(--clr-accent) 6%, var(--clr-surface)), var(--clr-surface) 55%); }
+.origin { position: relative; display: grid; grid-template-columns: minmax(0, 280px) minmax(0, 1fr); gap: clamp(28px, 4vw, 64px); align-items: center; margin-top: clamp(28px, 4vw, 48px); padding: clamp(26px, 3.5vw, 48px); border: 1px solid var(--clr-rule); border-radius: 6px; background: linear-gradient(135deg, color-mix(in srgb, var(--clr-accent) 6%, var(--clr-surface)), var(--clr-surface) 55%); }
+/* The photo as an instant print: white border, caption on the print, a slight tilt. */
+.origin-photo { margin: 0; padding: 8px 8px 0; background: var(--clr-ink); transform: rotate(-2deg); box-shadow: 0 18px 40px rgb(0 0 0 / .45); }
+.origin-photo img { display: block; width: 100%; height: auto; }
+.origin-photo figcaption { padding: 10px 4px 12px; color: var(--clr-bg); font: 600 11px/1 var(--font-jetbrains), monospace; letter-spacing: .08em; text-transform: uppercase; text-align: center; }
 .origin-eyebrow { color: var(--clr-accent); }
 .origin-title { margin-top: 14px; font: 800 clamp(30px, 3.4vw, 48px)/1 var(--font-barlow-condensed), sans-serif; text-transform: uppercase; letter-spacing: -.02em; }
 .origin-text { max-width: 900px; margin-top: 18px; font-size: clamp(19px, 2vw, 28px); line-height: 1.45; letter-spacing: -.01em; }
@@ -98,6 +102,8 @@
   .lab-teaser-card { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 760px) {
+  .origin { grid-template-columns: minmax(0, 1fr); }
+  .origin-photo { justify-self: center; width: min(240px, 78%); }
   .hero-topline { padding-top: 23px; font-size: 8px; }
   .hero-title { font-size: clamp(54px, 16vw, 100px); }
   .hero-body { margin-top: 24px; font-size: 16px; }

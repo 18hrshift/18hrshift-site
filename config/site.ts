@@ -47,6 +47,14 @@ export const home = {
     originEyebrow: 'Origin story',
     originTitle: 'Long-time best friends.',
     origin: 'We grew up in suburban Long Island playing video games and tinkering with electronics. We both dabbled in code and it never quite stuck. Agentic coding brought us back, to finally understand the machines we’ve always loved.',
+    // Converted to sRGB and saved with no metadata (no EXIF, location or color profile).
+    originPhoto: {
+      src: '/people/joe-and-john-hike.jpg',
+      alt: 'Joe and John grinning in a selfie on a snowy wooded trail, beside a blue trail marker.',
+      width: 960,
+      height: 1280,
+      caption: 'Co-op, offline.',
+    },
   },
   featured: {
     eyebrow: '02 / Featured work',
@@ -122,6 +130,7 @@ export const labPage = {
   },
 } as const
 
+// The idea pile (config/ideas.ts), called Side quests on the site.
 export const ideasPage = {
   path: '/side-quests',
   metaTitle: 'Side quests',
@@ -130,7 +139,6 @@ export const ideasPage = {
   title: ['Side', 'quests.'],
   intro: 'Not everything ships. This is where the rest lives: half-built games, shelved apps and napkin sketches. Some of these will come back. If one grabs you, say hi and let’s build it together.',
   legendLabel: 'How far each one got',
-// The idea pile (config/ideas.ts), called Side quests on the site.
   pileTitle: (firstName: string) => `${firstName}’s side quests`,
   visit: 'Take a look',
   profileLink: 'See all side quests',
