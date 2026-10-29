@@ -104,7 +104,7 @@ export const home = {
 export const gamesPage = {
   path: '/games',
   metaTitle: 'Games',
-  description: 'Every 18HRSHIFT game in one place: browser games by John Byrnes and Joe Lanellotti, from release candidates to early builds, with real gameplay captures.',
+  description: 'Every 18HRSHIFT game in one place: browser games by John Byrnes and Joe Lanellotti, from daily games to early builds, with real gameplay captures.',
   eyebrow: 'Games',
   title: ['The', 'cabinet.'],
   intro: 'Every game here runs in a browser, and every image is a real gameplay capture. The status labels are honest: some are close to done, some are early builds.',
