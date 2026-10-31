@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { blogZone } from '@/config/blog-zone'
 import { site } from '@/config/site'
+import { isOtherZone } from '@/lib/zones'
 import nextConfig from '../next.config'
 
 // The blog is a separate app proxied under /blog. These pin the routing this site
@@ -35,4 +36,29 @@ test('the short host redirects to /blog, keeping the path', async ({ request }) 
   }
   // The real host is untouched.
   expect((await request.get('/', { maxRedirects: 0 })).status()).toBe(200)
+})
+
+test('only the blog\'s paths count as another zone', () => {
+  for (const href of [blogZone.path, `${blogZone.path}/some-post`]) expect(isOtherZone(href), href).toBe(true)
+  for (const href of ['/', '/games', `${blogZone.path}roll`, '/side-quests']) expect(isOtherZone(href), href).toBe(false)
+})
+
+test('the nav and footer link to the blog with a full page load', async ({ page }) => {
+  const blogItem = site.nav.find((item) => item.href === blogZone.path)
+  expect(blogItem).toBeDefined()
+  // <Link> would prefetch the blog's route from this app; a plain <a> requests nothing until clicked.
+  const blogRequests: string[] = []
+  page.on('request', (request) => {
+    const { pathname } = new URL(request.url())
+    if (isOtherZone(pathname)) blogRequests.push(request.url())
+  })
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto('/', { waitUntil: 'networkidle' })
+  for (const name of ['Main navigation', 'Footer']) {
+    const link = page.getByRole('navigation', { name }).getByRole('link', { name: blogItem!.label, exact: true })
+    await expect(link, name).toHaveAttribute('href', blogZone.path)
+    await link.hover()
+  }
+  await page.waitForLoadState('networkidle')
+  expect(blogRequests).toEqual([])
 })

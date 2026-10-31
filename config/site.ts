@@ -1,6 +1,7 @@
 // Site identity, navigation, contact and page copy. Components read these
 // values; none of this text should be typed anywhere else.
 
+import { blogZone } from './blog-zone'
 import { people, playerOrder, type PersonId } from './people'
 import { siteOrigin } from './origin'
 
@@ -16,6 +17,7 @@ export const site = {
     { label: 'Games', href: '/games' },
     { label: 'Lab', href: '/lab' },
     { label: 'Side quests', href: '/side-quests' },
+    { label: 'Blog', href: blogZone.path },
     ...playerOrder.map((id) => ({ label: people[id].firstName, href: people[id].page })),
   ],
   contactLink: { label: 'Build with us', href: '/#contact' },
