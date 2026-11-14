@@ -13,6 +13,11 @@ export const site = {
   locale: 'en_US',
   email: 'admin@18hrshift.com',
   github: 'https://github.com/18hrshift',
+  socialLinks: [
+    { label: 'itch.io', href: 'https://18hrshift.itch.io/' },
+    { label: 'X', href: 'https://x.com/18hrshift' },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/company/18hrshift/' },
+  ],
   nav: [
     { label: 'Games', href: '/games' },
     { label: 'Lab', href: '/lab' },

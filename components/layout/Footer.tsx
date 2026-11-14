@@ -14,6 +14,7 @@ export function Footer() {
           <Link href="/">{site.homeLabel}</Link>
           {site.nav.map((item) => <SiteLink key={item.href} href={item.href}>{item.label}</SiteLink>)}
           <ExternalLink href={site.github}>GitHub ↗</ExternalLink>
+          {site.socialLinks.map((item) => <ExternalLink key={item.href} href={item.href}>{item.label} ↗</ExternalLink>)}
           <a href={`mailto:${site.email}`}>{site.email}</a>
         </nav>
       </div>
