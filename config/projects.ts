@@ -173,7 +173,10 @@ export const projects: readonly Project[] = [
       'A branching story with multiple character paths and endings',
       'Community review materials for feedback and corrections',
     ],
-    status: 'Ongoing fan project',
+    status: 'Public beta',
+    url: 'https://ouran.18hrshift.com',
+    linkLabel: 'Open the English patcher',
+    capture: siteCapture('ouran', 'the Ouran DS English patcher at ouran.18hrshift.com'),
   },
   {
     id: 'bedrock',

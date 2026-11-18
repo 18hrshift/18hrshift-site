@@ -32,7 +32,9 @@ test('his projects link out only where a live site exists', async ({ page }) => 
         await expect(article.getByRole('link', { name: new RegExp(project.linkLabel!) })).toHaveAttribute('href', project.url)
         const capture = article.getByRole('img', { name: project.capture!.alt })
         await expect(capture).toBeVisible()
-        expect(await capture.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), `${project.name} capture loads`).toBe(true)
+        // Captures are lazy-loaded, so bring each into view before checking it loaded.
+        await capture.scrollIntoViewIfNeeded()
+        await expect.poll(() => capture.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), { message: `${project.name} capture loads` }).toBe(true)
       } else {
         await expect(article.getByRole('link')).toHaveCount(0)
       }

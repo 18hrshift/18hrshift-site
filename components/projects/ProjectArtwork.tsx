@@ -6,7 +6,7 @@ import { projectCopy } from '@/config/site'
 
 // Artwork for projects that aren't games. A project with a live site shows a real
 // capture of it; Embersave and Hairraiser use their own brand assets; the podcast,
-// Marginalia, the fan translation and the systems use illustrations.
+// Marginalia and the systems use illustrations.
 export default function ProjectArtwork({ project }: { project: Project }) {
   if (project.kind === 'System') return <SystemArtwork id={project.id} />
 
@@ -65,17 +65,6 @@ export default function ProjectArtwork({ project }: { project: Project }) {
             <div className="marginalia-page marginalia-page--art"><span className="marginalia-sun" /><span className="marginalia-hill" /></div>
           </div>
           <div className="marginalia-wordmark">Marginalia</div>
-          <span className="project-art-footnote">ILLUSTRATION</span>
-        </div>
-      )
-    case 'ouran':
-      return (
-        <div className="project-art project-art--ouran" aria-hidden="true">
-          <span className="project-art-corner">FAN TRANSLATION / NINTENDO DS</span>
-          <div className="ouran-handheld">
-            <div className="ouran-screen"><span>JP</span></div>
-            <div className="ouran-screen ouran-screen--en"><span>EN</span><i /><i /><i /></div>
-          </div>
           <span className="project-art-footnote">ILLUSTRATION</span>
         </div>
       )

@@ -14,9 +14,6 @@
   --project-sepia-light: #c9b79b;
   --project-sky: #bcd7e6;
   --project-meadow: #6c8f5a;
-  --project-blossom: #ffd3e6;
-  --project-plum: #4a1530;
-  --project-blush: #fff4f9;
 }
 
 /* Artwork */
@@ -61,13 +58,6 @@
 .marginalia-sun { position: absolute; width: 26%; aspect-ratio: 1; top: 18%; right: 18%; border-radius: 50%; background: var(--clr-orange); }
 .marginalia-hill { position: absolute; left: -20%; right: -20%; bottom: -40%; height: 75%; border-radius: 50%; background: var(--project-meadow); }
 .marginalia-wordmark { font: italic 500 clamp(30px, 3.6vw, 52px)/1 Georgia, 'Times New Roman', serif; letter-spacing: -.01em; }
-.project-art--ouran { display: grid; place-items: center; background: radial-gradient(ellipse at 50% 20%, var(--project-blossom), var(--clr-magenta) 80%); color: var(--project-plum); }
-.ouran-handheld { display: grid; gap: 10px; width: 36%; padding: 12px; background: var(--project-blush); border-radius: 12px; box-shadow: 0 18px 34px color-mix(in srgb, var(--project-plum) 25%, transparent); }
-.ouran-screen { position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 5px; aspect-ratio: 4 / 3; padding: 10%; background: var(--project-plum); border-radius: 3px; color: var(--project-blush); }
-.ouran-screen span { position: absolute; top: 8px; left: 10px; font: 9px var(--font-jetbrains), monospace; opacity: .6; }
-.ouran-screen--en span { opacity: 1; color: var(--clr-accent); }
-.ouran-screen i { height: 3px; border-radius: 2px; background: var(--project-blush); opacity: .8; }
-.ouran-screen i:last-child { width: 60%; }
 
 /* Inline project (on the profile pages) */
 .project-feature { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 60px); align-items: start; }
