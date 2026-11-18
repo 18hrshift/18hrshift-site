@@ -197,11 +197,11 @@ export const profilePages: Readonly<Record<PersonId, { metaTitle: string; descri
   },
   joe: {
     metaTitle: joe,
-    description: `${joe}, co-founder of 18HRSHIFT. SpotSlop, Power Hour Club, NYBEC Tracker, OurTV, the Marginalia reading app, a Nintendo DS fan translation and a long list of side quests.`,
+    description: `${joe}, co-founder of 18HRSHIFT. OurTV, SpotSlop, Power Hour Club, NYBEC Tracker, the Marginalia reading app, a Nintendo DS fan translation and a long list of side quests.`,
     sections: [
-      { id: 'live', title: 'Live now', kind: 'projects', projects: ['power-hour-club', 'nybec'] },
+      { id: 'live', title: 'Live now', kind: 'projects', projects: ['ourtv', 'power-hour-club', 'nybec'] },
       { id: 'games', title: 'His games', kind: 'games' },
-      { id: 'works', title: 'In the works', kind: 'projects', projects: ['ourtv', 'marginalia', 'ouran'] },
+      { id: 'works', title: 'In the works', kind: 'projects', projects: ['marginalia', 'ouran'] },
       { id: 'ideas', title: 'Side quests', kind: 'ideas' },
     ],
   },
