@@ -111,7 +111,7 @@ export const people: Readonly<Record<PersonId, Person>> = {
   joe: {
     id: 'joe',
     initials: 'JL',
-    name: 'Joe Lanellotti',
+    name: 'Joe Lancellotti',
     firstName: 'Joe',
     page: '/joe',
     line: 'Co-founder. Ships the games, spins the playlists, translates the imports.',

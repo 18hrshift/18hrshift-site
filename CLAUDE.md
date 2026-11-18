@@ -2,7 +2,7 @@
 
 # 18HRSHIFT site
 
-Relaunched October 27, 2026 as the joint portfolio of John Byrnes and Joe Lanellotti. See README.md for setup, structure and verification.
+Relaunched October 27, 2026 as the joint portfolio of John Byrnes and Joe Lancellotti. See README.md for setup, structure and verification.
 
 - Next.js 16 App Router, React 19, TypeScript, Tailwind CSS 4, raw Three.js.
 - Read the installed Next.js guides before changing framework behavior.

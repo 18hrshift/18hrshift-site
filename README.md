@@ -1,6 +1,6 @@
 # 18HRSHIFT
 
-The joint portfolio and launch pad of John Byrnes and Joe Lanellotti: their games, platforms, side projects, an interactive Three.js lab and the systems they run. Nothing is for sale; collaborators are welcome.
+The joint portfolio and launch pad of John Byrnes and Joe Lancellotti: their games, platforms, side projects, an interactive Three.js lab and the systems they run. Nothing is for sale; collaborators are welcome.
 
 ## Run locally
 
