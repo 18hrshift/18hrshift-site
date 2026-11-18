@@ -5,10 +5,16 @@ import { blogZone } from './blog-zone'
 import { people, playerOrder, type PersonId } from './people'
 import { siteOrigin } from './origin'
 
+// Full names are spelled once, in config/people.ts. Copy that names John or Joe
+// reads them from there, so a fix to a name is a one-line change.
+const john = people.john.name
+const joe = people.joe.name
+const founders = `${john} and ${joe}`
+
 export const site = {
   name: '18HRSHIFT',
   tagline: 'Ideas don’t clock out.',
-  description: '18HRSHIFT is John Byrnes and Joe Lancellotti: internet native, AI native, building games, music tools, platforms and odd experiments out in the open.',
+  description: `18HRSHIFT is ${founders}: internet native, AI native, building games, music tools, platforms and odd experiments out in the open.`,
   url: siteOrigin,
   locale: 'en_US',
   email: 'admin@18hrshift.com',
@@ -38,9 +44,9 @@ export const home = {
   description: site.description,
   hero: {
     eyebrow: 'Now playing',
-    credit: 'John Byrnes + Joe Lancellotti',
+    credit: `${john} + ${joe}`,
     title: ['Ideas don’t', 'clock out.'],
-    body: '18HRSHIFT is John Byrnes and Joe Lancellotti. Internet native from the start, AI native now. We use AI to go from idea to working thing in days, then put it out in the open to see what sticks. Games, music tools, platforms, odd experiments. Collaborators welcome.',
+    body: `18HRSHIFT is ${founders}. Internet native from the start, AI native now. We use AI to go from idea to working thing in days, then put it out in the open to see what sticks. Games, music tools, platforms, odd experiments. Collaborators welcome.`,
     primary: { label: 'Play the games', href: '/games' },
     secondary: { label: 'Meet the players', href: '#players' },
   },
@@ -111,7 +117,7 @@ export const home = {
 export const gamesPage = {
   path: '/games',
   metaTitle: 'Games',
-  description: 'Every 18HRSHIFT game in one place: browser games by John Byrnes and Joe Lancellotti, from daily games to early builds, with real gameplay captures.',
+  description: `Every 18HRSHIFT game in one place: browser games by ${founders}, from daily games to early builds, with real gameplay captures.`,
   eyebrow: 'Games',
   title: ['The', 'cabinet.'],
   intro: 'Every game here runs in a browser, and every image is a real gameplay capture. The status labels are honest: some are close to done, some are early builds.',
@@ -142,7 +148,7 @@ export const labPage = {
 export const ideasPage = {
   path: '/side-quests',
   metaTitle: 'Side quests',
-  description: 'Half-built games, shelved apps and napkin sketches from John Byrnes and Joe Lancellotti. Some will come back, and some are up for grabs.',
+  description: `Half-built games, shelved apps and napkin sketches from ${founders}. Some will come back, and some are up for grabs.`,
   eyebrow: 'Side quests',
   title: ['Side', 'quests.'],
   intro: 'Not everything ships. This is where the rest lives: half-built games, shelved apps and napkin sketches. Some of these will come back. If one grabs you, say hi and let’s build it together.',
@@ -179,8 +185,8 @@ export type ProfileSection =
 // Sections render in order. A games or ideas section is left out while it would be empty.
 export const profilePages: Readonly<Record<PersonId, { metaTitle: string; description: string; sections: readonly ProfileSection[] }>> = {
   john: {
-    metaTitle: 'John Byrnes',
-    description: 'John Byrnes, co-founder of 18HRSHIFT. His games, Hairraiser, the Andrew Asks How podcast, the systems he runs and his side quests.',
+    metaTitle: john,
+    description: `${john}, co-founder of 18HRSHIFT. His games, Hairraiser, the Andrew Asks How podcast, the systems he runs and his side quests.`,
     sections: [
       { id: 'show', title: 'The show', kind: 'projects', projects: ['aah'] },
       { id: 'platform', title: 'The platform', kind: 'projects', projects: ['hairraiser'] },
@@ -190,8 +196,8 @@ export const profilePages: Readonly<Record<PersonId, { metaTitle: string; descri
     ],
   },
   joe: {
-    metaTitle: 'Joe Lancellotti',
-    description: 'Joe Lancellotti, co-founder of 18HRSHIFT. SpotSlop, Power Hour Club, NYBEC Tracker, OurTV, the Marginalia reading app, a Nintendo DS fan translation and a long list of side quests.',
+    metaTitle: joe,
+    description: `${joe}, co-founder of 18HRSHIFT. SpotSlop, Power Hour Club, NYBEC Tracker, OurTV, the Marginalia reading app, a Nintendo DS fan translation and a long list of side quests.`,
     sections: [
       { id: 'live', title: 'Live now', kind: 'projects', projects: ['power-hour-club', 'nybec'] },
       { id: 'games', title: 'His games', kind: 'games' },
