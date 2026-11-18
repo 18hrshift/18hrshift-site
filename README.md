@@ -74,4 +74,14 @@ npm run test:e2e
 
 ## Delivery
 
-The repository is bound to the existing `18hrshift-site` Vercel project. Deploy with the Vercel CLI from a checkout linked to that project (`.vercel/project.json`, gitignored): `vercel deploy` for a preview, `vercel deploy --prod` only for an approved production release. Do not assume a Git push deploys anything. Verify the project, target and alias after every deploy.
+The `18hrshift-site` Vercel project is connected to this repository (since November 17, 2026) with `main` as its production branch:
+
+- A push to `main` builds and deploys production at 18hrshift.com.
+- A push to any other branch builds a preview with its own URL.
+- A build that fails is never promoted, and the previous production deployment stays live.
+
+Run the verification checks before pushing `main`, and keep unfinished work on a branch. `.github/workflows/checks.yml` runs lint, `test.sh` and the browser tests on every push and pull request. It reports problems but does not block the Vercel deploy, which runs in parallel.
+
+If Vercel lists a deployment as Blocked, the commit's author is not on the Vercel team. Open the deployment in the Vercel dashboard and authorize the author once.
+
+A manual deploy from a checkout linked to the project (`.vercel/project.json`, gitignored) still works: `vercel deploy` for a preview, `vercel deploy --prod` for production. Verify the project, target and alias after every deploy.
