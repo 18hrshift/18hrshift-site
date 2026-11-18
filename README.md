@@ -2,6 +2,8 @@
 
 The joint portfolio and launch pad of John Byrnes and Joe Lancellotti: their games, platforms, side projects, an interactive Three.js lab and the systems they run. Nothing is for sale; collaborators are welcome.
 
+Working in this repo with a coding agent? `AGENTS.md` holds the project rules and the shared working standards. Every agent should read it first (`CLAUDE.md` just points Claude Code there).
+
 ## Run locally
 
 ```bash
