@@ -13,6 +13,7 @@
 // script exits non-zero; existing files are only replaced by a successful capture.
 
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { chromium } from '@playwright/test'
 import sharp from 'sharp'
 import { games } from '../config/games.ts'
@@ -20,7 +21,7 @@ import { projects } from '../config/projects.ts'
 
 const viewport = { width: 1440, height: 900 }
 const quality = 72
-const root = new URL('..', import.meta.url).pathname
+const root = fileURLToPath(new URL('..', import.meta.url))
 
 const button = (page, name) => page.getByRole('button', { name }).first()
 
