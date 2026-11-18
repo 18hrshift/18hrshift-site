@@ -1,10 +1,11 @@
 // Every game in the cabinet. Copy and status come from each game's own README and
 // status docs; keep them in step when a game changes. Captures are real gameplay,
-// taken from the live sites by scripts/capture-games.mjs.
+// taken from the live sites by scripts/capture-sites.mjs. A game with no public
+// build yet uses a frame from its own capture tooling, cropped to 1440x900.
 
 import type { PersonId } from './people'
 
-export type Game = {
+type GameBase = {
   id: string
   name: string
   // Shown next to the name when the name itself is provisional.
@@ -13,16 +14,42 @@ export type Game = {
   line: string
   status: string
   owner: PersonId
-  url: string
   accent: 'accent' | 'blue' | 'orange' | 'magenta'
   bestOn?: string
   note?: string
+  // How it plays, a few short lines folded into the card under gamesPage.aboutLabel.
+  about?: readonly string[]
   capture: { src: string; alt: string; width: number; height: number }
 }
+
+// A game is playable now, with a link to play it, or not yet, with what is
+// coming in place of that link.
+export type Game = GameBase & ({ url: string; comingSoon?: never } | { url?: never; comingSoon: string })
 
 const capture = (id: string, alt: string) => ({ src: `/games/${id}.webp`, alt: `Gameplay capture: ${alt}`, width: 1440, height: 900 })
 
 export const games: readonly Game[] = [
+  {
+    id: 'biscayne',
+    name: 'Biscayne',
+    nameNote: 'Working title',
+    genre: 'Crime sim + roguelite',
+    line: 'Miami Beach, 1983. Inherit your grandpa’s run-down strip mall, find out he was laundering cartel money, and keep up the payments. Then take the airboat into the swamp.',
+    status: 'In development',
+    owner: 'john',
+    comingSoon: 'Demo coming soon',
+    accent: 'blue',
+    bestOn: 'Desktop, keyboard or gamepad',
+    about: [
+      'Days on the strip: fix up storefronts, sign tenants and keep them happy.',
+      'Evenings, wash the dirty cash through your fronts. Wash too much and the heat comes.',
+      'Wednesdays the cartel drops off more cash. Sundays they collect, and the vig only goes up.',
+      'Saturday mornings, bid on storage units at the auction past the end of the block.',
+      'Swamp runs on Uncle Dale’s airboat: auto-firing weapons, level-ups and five stages with a boss in each.',
+      'One story across both halves, with a strip full of tenants and something humming out in the swamp.',
+    ],
+    capture: capture('biscayne', 'Collins Avenue by day, the pawn shop and the Suds City laundromat with tenants out front.'),
+  },
   {
     id: 'exponential-dead',
     name: 'Exponential Dead',

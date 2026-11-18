@@ -122,6 +122,7 @@ export const gamesPage = {
   title: ['The', 'cabinet.'],
   intro: 'Every game here runs in a browser, and every image is a real gameplay capture. The status labels are honest: some are close to done, some are early builds.',
   play: 'Play',
+  aboutLabel: 'How it plays',
   captureLabel: 'Gameplay capture',
   listLabel: 'All games',
   // An empty cartridge slot at the end of the cabinet, held for Joe's games.

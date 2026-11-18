@@ -35,6 +35,16 @@
 .cartridge-note { color: var(--clr-muted); font: 10px/1.6 var(--font-jetbrains), monospace; }
 .cartridge-play { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: auto; padding: 13px 16px; border: 1px solid var(--cart); color: var(--clr-ink); font-size: 14px; font-weight: 600; transition: background .2s, color .2s; }
 .cartridge-play:hover { background: var(--cart); color: var(--clr-bg); }
+/* No build yet: the play slot says what's coming, and isn't a link. */
+.cartridge-play--soon { border-style: dashed; color: var(--clr-muted); }
+.cartridge-play--soon:hover { background: none; color: var(--clr-muted); }
+.cartridge-about { border-top: 1px solid var(--clr-rule); padding-top: 12px; }
+.cartridge-about summary { cursor: pointer; width: fit-content; color: var(--clr-ink); font: 500 11px/1.4 var(--font-jetbrains), monospace; letter-spacing: .06em; text-transform: uppercase; }
+.cartridge-about summary::marker { color: var(--cart); }
+.cartridge-about summary:focus-visible { outline: 2px solid var(--cart); outline-offset: 3px; }
+.cartridge-about ul { display: grid; gap: 8px; margin-top: 12px; padding-left: 0; list-style: none; }
+.cartridge-about li { position: relative; padding-left: 16px; color: var(--clr-muted); font-size: 14px; line-height: 1.5; }
+.cartridge-about li::before { content: '+'; position: absolute; left: 0; color: var(--cart); }
 .cartridge-host { font: 10px var(--font-jetbrains), monospace; letter-spacing: .04em; color: inherit; opacity: .75; overflow-wrap: anywhere; text-align: right; }
 .cartridge-host span { font-size: 16px; }
 

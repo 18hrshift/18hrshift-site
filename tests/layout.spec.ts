@@ -52,7 +52,7 @@ test('core content and links work without JavaScript', async ({ browser, baseURL
   for (const item of site.nav) await expect(footer.getByRole('link', { name: item.label, exact: true })).toHaveAttribute('href', item.href)
 
   await page.goto('/games', { waitUntil: 'networkidle' })
-  for (const game of games) await expect(page.getByRole('link', { name: new RegExp(`${gamesPage.play} ${game.name}`) })).toHaveAttribute('href', game.url)
+  for (const game of games.filter((game) => game.url)) await expect(page.getByRole('link', { name: new RegExp(`${gamesPage.play} ${game.name}`) })).toHaveAttribute('href', game.url!)
 
   for (const id of ['john', 'joe'] as const) {
     await page.goto(people[id].page, { waitUntil: 'networkidle' })

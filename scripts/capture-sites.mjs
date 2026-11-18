@@ -83,7 +83,8 @@ const paths = {
 const startUrl = { 'fourth-and-chalk': (url) => `${url}/?seed=7` }
 
 const targets = [
-  ...games.map((game) => ({ ...game, kind: 'game' })),
+  // A game with no public build yet has no site to capture; its image comes from its own capture tooling.
+  ...games.filter((game) => game.url).map((game) => ({ ...game, kind: 'game' })),
   ...projects.filter((project) => project.capture && project.url).map((project) => ({ ...project, kind: 'project' })),
 ]
 

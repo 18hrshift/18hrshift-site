@@ -8,7 +8,8 @@ import { ExternalLink, OwnerTag, Status } from '@/components/ui/primitives'
 const host = (url: string) => new URL(url).host
 
 // A game as a cartridge: genre and owner on the label, a real gameplay capture
-// on the screen, then the honest line, status and a link to play.
+// on the screen, then the honest line, status, how it plays (when there's more to
+// say) and a link to play, or what's coming instead when there's no build yet.
 export function GameCard({ game, headingLevel = 2 }: { game: Game; headingLevel?: 2 | 3 }) {
   const Heading = headingLevel === 2 ? 'h2' : 'h3'
   return (
@@ -32,10 +33,20 @@ export function GameCard({ game, headingLevel = 2 }: { game: Game; headingLevel?
           {game.bestOn && <span className="eyebrow cartridge-best">{game.bestOn}</span>}
         </div>
         {game.note && <p className="cartridge-note">{game.note}</p>}
-        <ExternalLink className="cartridge-play" href={game.url}>
-          <span>{gamesPage.play}<span className="sr-only"> {game.name}</span></span>
-          <span className="cartridge-host">{host(game.url)} <span aria-hidden="true">↗</span></span>
-        </ExternalLink>
+        {game.about && (
+          <details className="cartridge-about">
+            <summary>{gamesPage.aboutLabel}</summary>
+            <ul>{game.about.map((point) => <li key={point}>{point}</li>)}</ul>
+          </details>
+        )}
+        {game.url ? (
+          <ExternalLink className="cartridge-play" href={game.url}>
+            <span>{gamesPage.play}<span className="sr-only"> {game.name}</span></span>
+            <span className="cartridge-host">{host(game.url)} <span aria-hidden="true">↗</span></span>
+          </ExternalLink>
+        ) : (
+          <p className="cartridge-play cartridge-play--soon">{game.comingSoon}</p>
+        )}
       </div>
     </article>
   )
