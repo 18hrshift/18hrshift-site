@@ -31,8 +31,7 @@ const capture = (id: string, alt: string) => ({ src: `/games/${id}.webp`, alt: `
 export const games: readonly Game[] = [
   {
     id: 'biscayne',
-    name: 'Biscayne',
-    nameNote: 'Working title',
+    name: 'Sunken Assets',
     genre: 'Crime sim + roguelite',
     line: 'Miami Beach, 1983. Inherit your grandpa’s run-down strip mall, find out he was laundering cartel money, and keep up the payments. Then take the airboat into the swamp.',
     status: 'In development',

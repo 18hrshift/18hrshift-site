@@ -48,7 +48,7 @@ Status labels must stay honest: prototypes stay prototypes, and projects without
 
 ## Images
 
-- `public/games/`: gameplay captures of each game (1440x900 WebP). Live games are captured with Playwright by `npm run capture:sites`; a game with no public build is skipped there, and its image is a frame from the game's own capture tooling, cropped and scaled by hand (Biscayne's is a Collins Avenue frame from its `captures/`, HUD bar cropped off). Alt text starts "Gameplay capture:" and each card labels its image the same way.
+- `public/games/`: gameplay captures of each game (1440x900 WebP). Live games are captured with Playwright by `npm run capture:sites`; a game with no public build is skipped there, and its image is a frame from the game's own capture tooling, cropped and scaled by hand (Sunken Assets' is a Collins Avenue frame from its `captures/`, HUD bar cropped off). Alt text starts "Gameplay capture:" and each card labels its image the same way.
 - `public/projects/`: Embersave and Hairraiser brand art; `power-hour-club.webp`, `nybec.webp` and `ouran.webp` (the fan translation's patcher at ouran.18hrshift.com) are captures of those live sites, labelled "Site capture". The podcast, Marginalia and the systems art are illustrations drawn in code.
 - `public/people/`: avatars and John's photo. The avatars are the round 7 neon pair (`assets/avatars/final/pair-booth-yy.png`), cut into transparent 640px squares by `assets/avatars/crop_avatars.py`. `assets/avatars/README.md` has the generators, the edit script for tweaks and the 1000px PFPs.
 - `public/lab/liquid-chrome.webp`: a still of the liquid chrome scene captured from `/lab`, used by the home teaser.
